@@ -7,10 +7,12 @@ export function paymentOrderAdapter(app: express.Application) {
     const routes = express.Router();
 
     const paymentOrderRepository = new PaymentOrderPostgresRepository();
-    const paymentOrdeUseCase = new CreatePaymentOrderUseCase(paymentOrderRepository);
-    const controller = new PaymentOrderController(paymentOrdeUseCase);
-
+    
+    const paymentOrderUseCase = new CreatePaymentOrderUseCase(paymentOrderRepository);
+    
+    const controller = new PaymentOrderController(paymentOrderUseCase);
+    
     routes.post('/payment-order', controller.createPaymentOrder);
 
-    app.use('/payment', routes)
+    app.use('/treasury/v1', routes)
 };

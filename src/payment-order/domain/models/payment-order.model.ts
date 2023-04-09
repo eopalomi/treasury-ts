@@ -1,11 +1,10 @@
 
-export class OrdenPago {
-    public readonly _id: number;
-    public readonly _dateRegist: Date;
+export class PaymentOrder {
     public readonly _paymentAmount: number;
     public readonly _idPaymentStatus: number;
     public readonly _idPaymentType: number;
-    public readonly _idBankAccount: number;
+    public readonly _idPaymentMethod: number;
+    public readonly _idPaymentBank: number;
     public readonly _idUser: number;
     public readonly _idTypeCurrency: string;
     public readonly _paymentDate: Date;
@@ -14,12 +13,11 @@ export class OrdenPago {
     public readonly _accountantDate: Date;
 
     constructor(
-        _id: number,
-        _dateRegist: Date,
         _paymentAmount: number,
         _idPaymentStatus: number,
         _idPaymentType: number,
-        _idBankAccount: number,
+        _idPaymentMethod: number,
+        _idPaymentBank: number,
         _idUser: number,
         _idTypeCurrency: string,
         _paymentDate: Date,
@@ -27,12 +25,11 @@ export class OrdenPago {
         _accountantNumber: number,
         _accountantDate: Date
     ) {
-        this._id = _id;
-        this._dateRegist = _dateRegist;
         this._paymentAmount = _paymentAmount;
         this._idPaymentStatus = _idPaymentStatus;
         this._idPaymentType = _idPaymentType;
-        this._idBankAccount = _idBankAccount;
+        this._idPaymentMethod = _idPaymentMethod;
+        this._idPaymentBank = _idPaymentBank;
         this._idUser = _idUser;
         this._idTypeCurrency = _idTypeCurrency;
         this._paymentDate = _paymentDate;

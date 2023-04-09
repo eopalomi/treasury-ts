@@ -1,12 +1,11 @@
-import { OrdenPago } from "../../domain/models/payment-order.model";
+import { PaymentOrder } from "../../domain/models/payment-order.model";
 import { paymentOrderRepository } from "../../domain/repositories/payment-order.repository";
 
 interface CreateOrdenPagoParams {
-    id: number,
-    dateRegist: Date,
     paymentAmount: number,
     idPaymentStatus: number,
     idPaymentType: number,
+    idPaymentMethod: number,
     idBankAccount: number,
     idUser: number,
     idTypeCurrency: string,
@@ -19,13 +18,12 @@ interface CreateOrdenPagoParams {
 export class CreatePaymentOrderUseCase {
     constructor(private readonly paymentOrderRepository: paymentOrderRepository){}
 
-    public async execute(params: CreateOrdenPagoParams): Promise<void>{
+    public execute = async (params: CreateOrdenPagoParams): Promise<void> => {
         const {
-            id,
-            dateRegist,
             paymentAmount,
             idPaymentStatus,
             idPaymentType,
+            idPaymentMethod,
             idBankAccount,
             idUser,
             idTypeCurrency,
@@ -35,12 +33,11 @@ export class CreatePaymentOrderUseCase {
             accountantDate
         } = params;
 
-        const ordenPago = new OrdenPago(
-            id,
-            dateRegist,
+        const ordenPago = new PaymentOrder(
             paymentAmount,
             idPaymentStatus,
             idPaymentType,
+            idPaymentMethod,
             idBankAccount,
             idUser,
             idTypeCurrency,

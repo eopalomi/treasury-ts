@@ -5,6 +5,8 @@ const app = express();
 
 const port = process.env.PORT || '2121';
 
+app.use(express.json());
+
 // Adaptadores de Express
 paymentOrderAdapter(app);
 
