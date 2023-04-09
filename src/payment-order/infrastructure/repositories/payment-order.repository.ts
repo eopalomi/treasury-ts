@@ -1,9 +1,9 @@
 import { Pool } from 'pg';
 import { PaymentOrder } from '../../domain/models/payment-order.model';
-import { paymentOrderRepository } from '../../domain/repositories/payment-order.repository';
+import { PaymentOrderRepository } from '../../domain/repositories/payment-order.repository';
 import pool from '../adapters/postgres.client'
 
-export class PaymentOrderPostgresRepository implements paymentOrderRepository {
+export class PaymentOrderPostgresRepository implements PaymentOrderRepository {
     private readonly pool: Pool;
 
     constructor() {
@@ -78,9 +78,52 @@ export class PaymentOrderPostgresRepository implements paymentOrderRepository {
         };
     };
 
-    findById(id: number): Promise<PaymentOrder> {
-        throw new Error('Method not implemented.');
+    async findById(id: number): Promise<PaymentOrder> {
+        const client = await this.pool.connect();
+
+        try {
+            const query = `select * from pagos.tbblopag where id_blopag = ${id}`;
+            
+            let result = await client.query(query);
+
+            const row = result.rows[0];
+
+            let columnToPropertyMap = {
+                _paymentAmount: 'im_montot',
+                _idPaymentStatus: 'id_estpag',
+                _idPaymentType: 'id_forpag',
+                _idPaymentMethod: 'id_medpag',
+                _idPaymentBank: 'id_bancos',
+                _idUser: 'co_usuari',
+                _idTypeCurrency: 'id_tipmon',
+                _paymentDate: 'fe_pagblo',
+                _transacctionCode: 'nu_traban',
+                _accountantNumber: 'nu_asient',
+                _accountantDate: 'fe_asient'
+            };
+            
+            return new PaymentOrder(
+                row[columnToPropertyMap._paymentAmount],
+                row[columnToPropertyMap._idPaymentStatus],
+                row[columnToPropertyMap._idPaymentType],
+                row[columnToPropertyMap._idPaymentMethod],
+                row[columnToPropertyMap._idPaymentBank],
+                row[columnToPropertyMap._idUser],
+                row[columnToPropertyMap._idTypeCurrency],
+                new Date(row[columnToPropertyMap._paymentDate]),
+                row[columnToPropertyMap._transacctionCode],
+                row[columnToPropertyMap._accountantNumber],
+                new Date(row[columnToPropertyMap._accountantDate])
+            )
+        } catch (error) {
+            console.log("ERROR:", error)
+            await client.query('ROLLBACK');
+            throw new Error("Error al buscar la orde de pago");
+        } finally{
+            client.release();
+        };
     };
+
     update(ordenDePago: PaymentOrder): Promise<void> {
         throw new Error('Method not implemented.');
     };
@@ -88,4 +131,10 @@ export class PaymentOrderPostgresRepository implements paymentOrderRepository {
         throw new Error('Method not implemented.');
     };
 
+    findAll(): Promise<PaymentOrder> {
+        throw new Error('Method not implemented.');
+    }
+    updateAll(ordenDePago: PaymentOrder[]): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
 }

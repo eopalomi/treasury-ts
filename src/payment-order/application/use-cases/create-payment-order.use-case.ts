@@ -1,5 +1,5 @@
 import { PaymentOrder } from "../../domain/models/payment-order.model";
-import { paymentOrderRepository } from "../../domain/repositories/payment-order.repository";
+import { PaymentOrderRepository } from "../../domain/repositories/payment-order.repository";
 
 interface CreateOrdenPagoParams {
     paymentAmount: number,
@@ -16,7 +16,7 @@ interface CreateOrdenPagoParams {
 };
 
 export class CreatePaymentOrderUseCase {
-    constructor(private readonly paymentOrderRepository: paymentOrderRepository){}
+    constructor(private readonly paymentOrderRepository: PaymentOrderRepository){}
 
     public execute = async (params: CreateOrdenPagoParams): Promise<void> => {
         const {

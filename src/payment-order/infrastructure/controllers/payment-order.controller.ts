@@ -1,16 +1,15 @@
 import { Response, Request } from "express";
 import { CreatePaymentOrderUseCase } from "../../application/use-cases/create-payment-order.use-case";
+import { GetPaymentOrderUseCase } from "../../application/use-cases/get-payment-order.use-case";
 
 export class PaymentOrderController {
 
-    constructor(private createPaymentOrderUseCase: CreatePaymentOrderUseCase) {
+    constructor(private createPaymentOrderUseCase: CreatePaymentOrderUseCase, private getPaymentOrderUseCase: GetPaymentOrderUseCase) {
         this.createPaymentOrder = this.createPaymentOrder.bind(this);
+        this.finPaymentOrder = this.finPaymentOrder.bind(this);
     }
 
     public async createPaymentOrder({ body }: Request, res: Response): Promise<any> {
-        // console.log("body", body); 
-        // console.log("body", this.createPaymentOrderUseCase); 
-        
         try {
 
             const payment = await this.createPaymentOrderUseCase.execute({
@@ -40,7 +39,27 @@ export class PaymentOrderController {
                 stack: error.stack
             })
         }
-    }
+    };
 
+    public async finPaymentOrder(req: Request, res: Response): Promise<any> {
+        const id = req.params.id;
+        console.log("req.params", req.params)
 
+        try {
+            let payment = await this.getPaymentOrderUseCase.getPaymentOrder(parseInt(id));
+            console.log("payment", payment)
+
+            res.status(200).json({
+                responseCode: '00',
+                message: 'Orden de Pago encontrada',
+                data: payment
+            });
+        } catch (error: any) {
+            res.status(400).json({
+                responseCode: '01',
+                message: error.message,
+                stack: error.stack
+            })
+        }
+    };
 };
