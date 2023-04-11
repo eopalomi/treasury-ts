@@ -12,7 +12,7 @@ export class PaymentOrderController {
     public async createPaymentOrder({ body }: Request, res: Response): Promise<any> {
         try {
 
-            const payment = await this.createPaymentOrderUseCase.execute({
+            const paymentOrder = await this.createPaymentOrderUseCase.execute({
                 paymentAmount: body.paymentAmount,
                 idPaymentStatus: body.idPaymentStatus,
                 idPaymentType: body.idPaymentType,
@@ -29,7 +29,7 @@ export class PaymentOrderController {
             res.status(200).json({
                 responseCode: '00',
                 message: 'Orden Pago Creada',
-                data: { payment }
+                data: paymentOrder
             })
 
         } catch (error: any) {
@@ -46,13 +46,13 @@ export class PaymentOrderController {
         console.log("req.params", req.params)
 
         try {
-            let payment = await this.getPaymentOrderUseCase.getPaymentOrder(parseInt(id));
-            console.log("payment", payment)
+            let paymentOrder = await this.getPaymentOrderUseCase.getPaymentOrder(parseInt(id));
+            console.log("payment", paymentOrder)
 
             res.status(200).json({
                 responseCode: '00',
                 message: 'Orden de Pago encontrada',
-                data: payment
+                data: paymentOrder
             });
         } catch (error: any) {
             res.status(400).json({

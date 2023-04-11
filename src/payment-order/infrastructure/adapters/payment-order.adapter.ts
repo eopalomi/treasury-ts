@@ -17,8 +17,8 @@ export function paymentOrderAdapter(app: express.Application) {
     //CONTROLLER
     const controller = new PaymentOrderController(createPaymentOrderUseCase, findPaymentOrderUseCase);
     
-    routes.post('/payment-order', controller.createPaymentOrder);
-    routes.get('/payment-order/:id', controller.finPaymentOrder);
+    routes.post('/v1/payment-order', controller.createPaymentOrder);
+    routes.get('/v1/payment-order/:id', controller.finPaymentOrder);
 
-    app.use('/treasury/v1', routes)
+    app.use('/treasury', routes)
 };

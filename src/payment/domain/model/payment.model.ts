@@ -1,27 +1,24 @@
 
 export class Payment {
-    private readonly idPayment: number;
-    private readonly paymentDate: Date;
-    private readonly referenceCode: string;
-    private readonly paymentAmount: number;
-    private readonly idcurrencyType: string;
-    private readonly paymentType: number;
-    private readonly idPaymentCategory: number;
-    private readonly exchangeRate: number;
-    private readonly idPaymentSubcategory: number;
+    public readonly paymentDate: Date;
+    public readonly referenceCode: string;
+    public readonly paymentAmount: number;
+    public readonly idcurrencyType: number;
+    public readonly paymentType: number;
+    public readonly idPaymentCategory: number;
+    public readonly exchangeRate: number;
+    public readonly idPaymentSubcategory: number;
 
     constructor(
-        idPayment: number,
         paymentDate: Date,
         referenceCode: string,
         paymentAmount: number,
-        idcurrencyType: string,
+        idcurrencyType: number,
         paymentType: number,
         idPaymentCategory: number,
         exchangeRate: number,
         idPaymentSubcategory: number
-    ){
-        this.idPayment = idPayment;
+    ) {
         this.paymentDate = paymentDate;
         this.referenceCode = referenceCode;
         this.paymentAmount = paymentAmount;
@@ -32,4 +29,9 @@ export class Payment {
         this.idPaymentSubcategory = idPaymentSubcategory;
     }
 
+    validateidcurrencyType(): boolean {
+        const currencyTypes = [1, 2];
+
+        return currencyTypes.includes(this.idcurrencyType);
+    }
 }
