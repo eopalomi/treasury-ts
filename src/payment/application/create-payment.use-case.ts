@@ -5,7 +5,7 @@ interface PaymentParams {
     paymentDate: Date,
     referenceCode: string,
     paymentAmount: number,
-    idcurrencyType: string,
+    idcurrencyType: number,
     paymentType: number,
     idPaymentCategory: number,
     exchangeRate: number,

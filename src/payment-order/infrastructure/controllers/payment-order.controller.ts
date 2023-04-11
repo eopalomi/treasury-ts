@@ -31,7 +31,6 @@ export class PaymentOrderController {
                 message: 'Orden Pago Creada',
                 data: paymentOrder
             })
-
         } catch (error: any) {
             res.status(400).json({
                 responseCode: '01',
