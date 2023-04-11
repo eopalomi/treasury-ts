@@ -1,19 +1,18 @@
-import { Pool } from 'pg'
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
+
+dotenv.config({path:`.env.${process.env.NODE_ENV}`});
+
+console.log("DATOS CONEXION", process.env.DB_USER);
+
 
 const pool = new Pool({
-    user: 'epalomino',
-    password: '4cc3s03p4L0M1n0',
-    host: '10.3.3.51',
-    port: 5432,
-    database: 'PAGTES',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT!),
+    database: process.env.DB_NAME,
     log: (query) => console.log("Ejecutando Postgres: ",query)
 });
-
-// Escucha el evento 'query' del objeto de pool pg
-// pool.on('connect', (query) => {
-//     console.log(query.text); // Imprime la consulta SQL
-//     console.log(query.values); // Imprime los parámetros utilizados
-// });
-  
 
 export default pool;

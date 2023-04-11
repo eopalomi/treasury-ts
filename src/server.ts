@@ -13,5 +13,5 @@ paymentOrderAdapter(app);
 paymentAdapter(app);
 
 app.listen(port, ()=>{
-    console.log('Servidor corriendo en el puerto ' + port)
+    console.log('Servidor corriendo en el puerto ' + port + ' en el ambiente de ' + process.env.ENVIRONMENT)
 });

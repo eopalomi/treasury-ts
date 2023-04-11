@@ -11,7 +11,6 @@ export class PaymentOrderController {
 
     public async createPaymentOrder({ body }: Request, res: Response): Promise<any> {
         try {
-
             const paymentOrder = await this.createPaymentOrderUseCase.execute({
                 paymentAmount: body.paymentAmount,
                 idPaymentStatus: body.idPaymentStatus,
