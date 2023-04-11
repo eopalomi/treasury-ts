@@ -78,13 +78,17 @@ export class PaymentOrderPostgresRepository implements PaymentOrderRepository {
         };
     };
 
-    async findById(id: number): Promise<PaymentOrder> {
+    async findById(id: number): Promise<PaymentOrder | null> {
         const client = await this.pool.connect();
 
         try {
             const query = `select * from pagos.tbblopag where id_blopag = ${id}`;
             
             let result = await client.query(query);
+
+            if (!result.rows.length){
+                return null;
+            }
 
             const row = result.rows[0];
 

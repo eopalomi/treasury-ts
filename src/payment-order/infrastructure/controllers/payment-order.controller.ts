@@ -49,11 +49,19 @@ export class PaymentOrderController {
             let payment = await this.getPaymentOrderUseCase.getPaymentOrder(parseInt(id));
             console.log("payment", payment)
 
-            res.status(200).json({
-                responseCode: '00',
-                message: 'Orden de Pago encontrada',
-                data: payment
-            });
+            if (!payment){
+                res.status(404).json({
+                    responseCode: '00',
+                    message: 'Orden de pago no encontrada',
+                    data: payment
+                });    
+            } else {
+                res.status(200).json({
+                    responseCode: '00',
+                    message: 'Orden de Pago encontrada',
+                    data: payment
+                });
+            }
         } catch (error: any) {
             res.status(400).json({
                 responseCode: '01',
