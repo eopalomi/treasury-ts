@@ -27,11 +27,21 @@ export class Payment {
         this.idPaymentCategory = idPaymentCategory;
         this.exchangeRate = exchangeRate;
         this.idPaymentSubcategory = idPaymentSubcategory;
+
+        this.validate();
     }
 
-    validateidcurrencyType(): boolean {
-        const currencyTypes = [1, 2];
+    private validate() {
+        if (![1, 2].includes(this.idcurrencyType)){
+            throw new Error('Tipo de moneda no valida');
+        };
 
-        return currencyTypes.includes(this.idcurrencyType);
+        if (this.paymentAmount <= 0){
+            throw new Error('Monto a pagar no puede ser menor a cero')
+        }
+
+        if (![1,3,4,2,5,10].includes(this.paymentType)){
+            throw new Error('paymentType solo puede ser: 1,3,4,2,5,10')
+        }
     }
 }

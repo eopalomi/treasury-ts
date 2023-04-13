@@ -1,13 +1,13 @@
 import { Pool } from 'pg';
 import { PaymentOrder } from '../../domain/models/payment-order.model';
 import { PaymentOrderRepository } from '../../domain/repositories/payment-order.repository';
-import pool from '../adapters/postgres.client'
+import { postgresDatabase } from '../adapters/config/postgres.client';
 
 export class PaymentOrderPostgresRepository implements PaymentOrderRepository {
     private readonly pool: Pool;
 
     constructor() {
-        this.pool = pool;
+        this.pool = postgresDatabase.getConnection();
     }
 
     async create(paymentOrder: PaymentOrder): Promise<void> {

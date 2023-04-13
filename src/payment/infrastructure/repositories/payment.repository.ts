@@ -1,13 +1,13 @@
 import { Pool } from "pg";
 import { Payment } from "../../domain/model/payment.model";
 import { PaymentRepository } from "../../domain/repositories/payment.repository";
-import pool from "../adapters/postgres.client";
+import { postgresDatabase } from "../config/postgres.client";
 
 export class PaymentPostgresRepository implements PaymentRepository {
     private readonly pool: Pool;
 
     constructor() {
-        this.pool = pool;
+        this.pool = postgresDatabase.getConnection();
     }
 
     async create(payment: Payment): Promise<void> {

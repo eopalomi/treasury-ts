@@ -1,8 +1,10 @@
 import express from 'express';
 import { paymentOrderAdapter } from './payment-order/infrastructure/adapters/payment-order.adapter';
 import { paymentAdapter } from './payment/infrastructure/adapters/payment.adapter';
+import dotenv from 'dotenv';
 
 const app = express();
+dotenv.config({path:`.env.${process.env.NODE_ENV}`});
 
 const port = process.env.PORT || '2121';
 
