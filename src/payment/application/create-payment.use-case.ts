@@ -1,5 +1,5 @@
 import { PaymentDetail } from "../domain/model/payment-detail.model";
-import { NonTradicionalPayment } from "../domain/model/payment-nontradicional.model";
+import { NonTradicionalPayment } from "../domain/model/paymentCategories/payment-nontradicional.model";
 import { NonTraditionalPaymentRepository } from "../domain/repositories/payment-nontradicional.repository";
 
 interface PaymentParams {

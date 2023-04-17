@@ -1,5 +1,5 @@
-import { PaymentDetail } from "./payment-detail.model";
-import { Payment } from "./payment.model";
+import { PaymentDetail } from "../payment-detail.model";
+import { Payment } from "../payment.model";
 
 export class NonTradicionalPayment extends Payment {
 
