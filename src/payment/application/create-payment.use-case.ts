@@ -1,5 +1,6 @@
-import { Payment } from "../domain/model/payment.model";
-import { PaymentRepository } from "../domain/repositories/payment.repository";
+import { PaymentDetail } from "../domain/model/payment-detail.model";
+import { NonTradicionalPayment } from "../domain/model/payment-nontradicional.model";
+import { NonTraditionalPaymentRepository } from "../domain/repositories/payment-nontradicional.repository";
 
 interface PaymentParams {
     paymentDate: Date,
@@ -9,15 +10,19 @@ interface PaymentParams {
     paymentType: number,
     idPaymentCategory: number,
     exchangeRate: number,
-    idPaymentSubcategory: number
+    idPaymentSubcategory: number,
+    idFile: number,
+    creditActivationDate: Date,
+    customerName: string,
+    paymentDetail: PaymentDetail[]
 }
 
 export class CreatePaymentUseCase {
 
-    constructor(private payment: PaymentRepository) {};
+    constructor(private payment: NonTraditionalPaymentRepository) {};
 
      createPayment = async (params: PaymentParams):Promise<void> => {
-        const payment = new Payment(
+        const payment = new NonTradicionalPayment(
             params.paymentDate,
             params.referenceCode,
             params.paymentAmount,
@@ -25,7 +30,11 @@ export class CreatePaymentUseCase {
             params.paymentType,
             params.idPaymentCategory,
             params.exchangeRate,
-            params.idPaymentSubcategory
+            params.idPaymentSubcategory,
+            params.idFile,
+            params.creditActivationDate,
+            params.customerName,
+            params.paymentDetail
         );
 
        this.payment.create(payment);

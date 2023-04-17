@@ -1,14 +1,17 @@
+import { PaymentDetail } from "./payment-detail.model";
 
-export class Payment {
+export abstract class Payment {
+
     public readonly paymentDate: Date;
     public readonly referenceCode: string;
     public readonly paymentAmount: number;
     public readonly idcurrencyType: number;
-    public readonly paymentType: number;
     public readonly idPaymentCategory: number;
-    public readonly exchangeRate: number;
     public readonly idPaymentSubcategory: number;
-
+    public readonly paymentType: number;
+    public readonly exchangeRate: number;
+    public readonly paymentDetail: PaymentDetail[];
+    
     constructor(
         paymentDate: Date,
         referenceCode: string,
@@ -17,7 +20,8 @@ export class Payment {
         paymentType: number,
         idPaymentCategory: number,
         exchangeRate: number,
-        idPaymentSubcategory: number
+        idPaymentSubcategory: number,
+        paymentDetail: PaymentDetail[]
     ) {
         this.paymentDate = paymentDate;
         this.referenceCode = referenceCode;
@@ -27,11 +31,16 @@ export class Payment {
         this.idPaymentCategory = idPaymentCategory;
         this.exchangeRate = exchangeRate;
         this.idPaymentSubcategory = idPaymentSubcategory;
-
-        this.validate();
+        this.paymentDetail = paymentDetail;
+        
+        this.validatePayment();
     }
 
-    private validate() {
+    abstract validate(): void;
+
+    validatePayment(): void {
+        const regex: RegExp = /^[0-9]+$/;
+
         if (![1, 2].includes(this.idcurrencyType)){
             throw new Error('Tipo de moneda no valida');
         };

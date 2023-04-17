@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import { Payment } from "../../domain/model/payment.model";
-import { PaymentRepository } from "../../domain/repositories/payment.repository";
+import { PaymentRepository } from "../../domain/repositories/payment-nontradicional.repository";
 import { postgresDatabase } from "../config/postgres.client";
 
 export class PaymentPostgresRepository implements PaymentRepository {
