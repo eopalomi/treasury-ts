@@ -41,7 +41,7 @@ export class NonTradicionalPayment extends Payment {
     }
 
     validate(): void {
-        if (this.idFile.toString().length != 6){
+        if (this.expedientNumber.toString().length != 6){
             throw new Error('Cantidad de Digitos del expediente no puede ser diferente de 6')
         }
     }
