@@ -3,7 +3,7 @@ import { Payment } from "./payment.model";
 
 export class NonTradicionalPayment extends Payment {
 
-    private readonly idFile: number;
+    private readonly expedientNumber: number;
     private readonly creditActivationDate: Date;
     private readonly customerName: string;
 
@@ -16,7 +16,7 @@ export class NonTradicionalPayment extends Payment {
         idPaymentCategory: number,
         exchangeRate: number,
         idPaymentSubcategory: number,
-        idFile: number,
+        expedientNumber: number,
         creditActivationDate: Date,
         customerName: string,
         paymentDetail: PaymentDetail[]
@@ -33,7 +33,7 @@ export class NonTradicionalPayment extends Payment {
             paymentDetail
         );
 
-        this.idFile = idFile;
+        this.expedientNumber = expedientNumber;
         this.creditActivationDate = creditActivationDate;
         this.customerName = customerName;
 
