@@ -1,8 +1,8 @@
 import { PaymentDetail } from "../domain/model/payment-detail.model";
-import { NonTradicionalPayment } from "../domain/model/paymentCategories/payment-nontradicional.model";
-import { NonTraditionalPaymentRepository } from "../domain/repositories/payment-nontradicional.repository";
+import { NonTradicionalPayment } from "../domain/model/paymentCategories/nontradicional-payment.model";
+import { PaymentRepository } from "../domain/repositories/payment-nontradicional.repository";
 
-interface PaymentParams {
+interface PaymentDTO {
     paymentDate: Date,
     referenceCode: string,
     paymentAmount: number,
@@ -11,34 +11,71 @@ interface PaymentParams {
     idPaymentCategory: number,
     exchangeRate: number,
     idPaymentSubcategory: number,
-    idFile: number,
+    expedientNumber: number,
     creditActivationDate: Date,
-    customerName: string,
-    paymentDetail: PaymentDetail[]
-}
+    customerName: string
+};
+
+interface PaymentDetailtDTO {
+    idBank: number,
+    banckAccountNumber: number,
+    interbanckAccountNumber: string,
+    paymentAmmount: number,
+    beneficiaryName: string,
+    beneficiaryIdentificationDocument: string,
+    paymentDetails: string,
+    idPaymentStatus: number,
+    idPaymenOrder: number,
+    idBankForPayment: number,
+    accountingEntryNumber: number
+};
 
 export class CreatePaymentUseCase {
+    constructor(private paymentRepository: PaymentRepository) {};
 
-    constructor(private payment: NonTraditionalPaymentRepository) {};
+    createNonTraditionalPayment = async (paymentParams: PaymentDTO, paymentdetailParams: PaymentDetailtDTO[]):Promise<void> => {
+                
+        const paymentDetail = paymentdetailParams.map(({
+            idBank,
+            banckAccountNumber,
+            interbanckAccountNumber,
+            paymentAmmount,
+            beneficiaryName,
+            beneficiaryIdentificationDocument,
+            paymentDetails,
+            idPaymentStatus,
+            idPaymenOrder,
+            idBankForPayment,
+            accountingEntryNumber
+        }) => new PaymentDetail(
+            idBank,
+            banckAccountNumber,
+            interbanckAccountNumber,
+            paymentAmmount,
+            beneficiaryName,
+            beneficiaryIdentificationDocument,
+            paymentDetails,
+            idPaymentStatus,
+            idPaymenOrder,
+            idBankForPayment,
+            accountingEntryNumber
+        ));
 
-     createPayment = async (params: PaymentParams):Promise<void> => {
         const payment = new NonTradicionalPayment(
-            params.paymentDate,
-            params.referenceCode,
-            params.paymentAmount,
-            params.idcurrencyType,
-            params.paymentType,
-            params.idPaymentCategory,
-            params.exchangeRate,
-            params.idPaymentSubcategory,
-            params.idFile,
-            params.creditActivationDate,
-            params.customerName,
-            params.paymentDetail
+            paymentParams.paymentDate,
+            paymentParams.referenceCode,
+            paymentParams.paymentAmount,
+            paymentParams.idcurrencyType,
+            paymentParams.paymentType,
+            paymentParams.idPaymentCategory,
+            paymentParams.exchangeRate,
+            paymentParams.idPaymentSubcategory,
+            paymentParams.expedientNumber,
+            paymentParams.creditActivationDate,
+            paymentParams.customerName,
+            paymentDetail
         );
 
-       this.payment.create(payment);
-    }
-    
-
-}
+       await this.paymentRepository.create(payment, paymentDetail);
+    };
+};

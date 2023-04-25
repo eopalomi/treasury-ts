@@ -4,7 +4,7 @@ export class PaymentDetail {
     public readonly paymentDetailDate: string;
     public readonly idBank: number;
     public readonly banckAccountNumber: number;
-    public readonly interbanckAccountNumber: string;
+    public readonly interbankAccountNumber: string;
     public readonly paymentAmmount: number;
     public readonly beneficiaryName: string;
     public readonly beneficiaryIdentificationDocument: string;
@@ -17,7 +17,7 @@ export class PaymentDetail {
     constructor(
         idBank: number,
         banckAccountNumber: number,
-        interbanckAccountNumber: string,
+        interbankAccountNumber: string,
         paymentAmmount: number,
         beneficiaryName: string,
         beneficiaryIdentificationDocument: string,
@@ -29,7 +29,7 @@ export class PaymentDetail {
     ) {
         this.idBank = idBank;
         this.banckAccountNumber = banckAccountNumber;
-        this.interbanckAccountNumber = interbanckAccountNumber;
+        this.interbankAccountNumber = interbankAccountNumber;
         this.paymentAmmount = paymentAmmount;
         this.beneficiaryName = beneficiaryName;
         this.beneficiaryIdentificationDocument = beneficiaryIdentificationDocument;
@@ -47,15 +47,14 @@ export class PaymentDetail {
         const regex: RegExp = /^[0-9]+$/;
 
         if (!regex.test(this.beneficiaryIdentificationDocument)){
-            throw new Error('El numero de documento solo puede contener numeros');
-        }
-        ;
+            throw new Error('El documento solo puede contener numeros');
+        };
 
         if (![1,2,3,4].includes(this.idPaymentStatus)){
             throw new Error('El estado del pago solo puede ser: 1=Pendiente 2=Completado 3=Anulado 4=Por Confirmar')
         };
 
-        if (this.interbanckAccountNumber.length !== 20){
+        if (String(this.interbankAccountNumber).length !== 20){
             throw new Error('El numero de la cuenta interbancaria debe tener 20 digitos');
         };
 
@@ -118,5 +117,5 @@ export class PaymentDetail {
                 25 = SUNAT
             `);
         };
-    }
-}
+    };
+};

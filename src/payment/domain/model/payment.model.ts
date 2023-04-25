@@ -137,7 +137,7 @@ export abstract class Payment {
             `);
         };
 
-        if (regex.test(this.referenceCode)){
+        if (!regex.test(this.referenceCode)){
             throw new Error('la referencia solo puede contener letras y numeros')
         };
 
