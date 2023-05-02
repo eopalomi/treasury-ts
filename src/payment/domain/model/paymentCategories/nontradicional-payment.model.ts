@@ -8,7 +8,7 @@ export class NonTradicionalPayment extends Payment {
     private readonly customerName: string;
 
     constructor(
-        paymentDate: Date,
+        paymentDate: string,
         referenceCode: string,
         paymentAmount: number,
         idcurrencyType: number,

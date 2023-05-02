@@ -31,16 +31,16 @@ export class PaymentPostgresRepository implements PaymentRepository {
                 values(
                     '${payment.paymentDate}',
                     '${payment.referenceCode}',
-                    ${payment.paymentAmount},
-                    ${payment.idcurrencyType},
-                    ${payment.idPaymentCategory},
-                    ${payment.exchangeRate},
-                    ${payment.paymentType},
-                    ${payment.idPaymentSubcategory}
+                     ${payment.paymentAmount},
+                     ${payment.idcurrencyType},
+                     ${payment.idPaymentCategory},
+                     ${payment.exchangeRate},
+                     ${payment.paymentType},
+                     ${payment.idPaymentSubcategory}
                 )
                 returning id_pagtes;
             `;
-
+            console.log("query",query)
             const queryResult = await client.query(query);
             
             paymentDetail.forEach(async ele => {
@@ -56,7 +56,8 @@ export class PaymentPostgresRepository implements PaymentRepository {
                         id_estpag, 
                         co_docben, 
                         id_banpag,
-                        id_clapag
+                        id_clapag,
+                        fe_regist
                     )
                     values(
                         ${queryResult.rows[0].id_pagtes}, 
@@ -69,10 +70,11 @@ export class PaymentPostgresRepository implements PaymentRepository {
                         ${ele.idPaymentStatus}, 
                         1, 
                         ${ele.idBankForPayment},  
-                        ${payment.paymentType}
+                        ${payment.paymentType},
+                        '${ele.paymentDetailDate}'
                     );
                 `;
-                
+                console.log("detail",query)
                 await client.query(query);
             });
             

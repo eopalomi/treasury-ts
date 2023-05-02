@@ -1,4 +1,5 @@
-import { error } from "console";
+import { formatedDateYYYYMMDD_hhmmss } from "../../../shared/utils/date-utils";
+import { PaymentDetailExceptions } from "../exceptions/payment-detail.exception";
 
 export class PaymentDetail {
     public readonly paymentDetailDate: string;
@@ -39,7 +40,8 @@ export class PaymentDetail {
         this.idBankForPayment = idBankForPayment;
         this.accountingEntryNumber = accountingEntryNumber;
         
-        this.paymentDetailDate = new Date().toISOString().slice(0, 10);
+        // this.paymentDetailDate = new Date().toISOString().slice(0, 10);
+        this.paymentDetailDate = formatedDateYYYYMMDD_hhmmss(new Date());
         this.validate();
     }
 
@@ -47,75 +49,75 @@ export class PaymentDetail {
         const regex: RegExp = /^[0-9]+$/;
 
         if (!regex.test(this.beneficiaryIdentificationDocument)){
-            throw new Error('El documento solo puede contener numeros');
+            throw new PaymentDetailExceptions('numbersOnlyBeneficiaryDocument', 'El documento solo puede contener numeros');
         };
 
         if (![1,2,3,4].includes(this.idPaymentStatus)){
-            throw new Error('El estado del pago solo puede ser: 1=Pendiente 2=Completado 3=Anulado 4=Por Confirmar')
+            throw new PaymentDetailExceptions('paymentStatusID', 'El estado del pago solo puede ser: 1=Pendiente 2=Completado 3=Anulado 4=Por Confirmar')
         };
 
         if (String(this.interbankAccountNumber).length !== 20){
-            throw new Error('El numero de la cuenta interbancaria debe tener 20 digitos');
+            throw new PaymentDetailExceptions('lengthInterbankAccountNumber', 'El numero de la cuenta interbancaria debe tener 20 digitos');
         };
 
         if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].includes(this.idBank)){
-            throw new Error(` El codigo de banco solo puede ser:
-                1  = SCOTIABANK PERU SAA
-                2  = BBVA BANCO CONTINENTAL
-                3  = BCP BANCO DE CRÉDITO DEL PERÚ
-                4  = INTERBANK
-                5  = BANCO INTERAMERICANO DE FINANZAS
-                6  = BANCO DE LA NACIÓN
-                7  = CMAC MAYNAS SA
-                8  = CAJA 8 (C8)
-                9  = CRAC CHAVIN SA
-                10 = COOPERATIVA PACIFICO
-                11 = BANCO FINANCIERO DEL PERU
-                12 = HSBC BANK PERU SA
-                13 = CAJA PIURA
-                14 = CAJA HUANCAYO
-                15 = FALABELLA
-                16 = MI BANCO
-                17 = COOPERATIVA ABACO
-                18 = CRAC NUESTRA GENTE SAA
-                19 = CAJA ICA
-                20 = CAJA SULLANA
-                21 = CAJA TRUJILLO
-                22 = WESTER UNION
-                23 = BANCO SANTANDER
-                24 = CAJA SIPAN
-                25 = SUNAT
-            `);
+            throw new PaymentDetailExceptions('bankID', ` El codigo de banco solo puede ser:
+                 1=SCOTIABANK PERU SAA
+                 2=BBVA BANCO CONTINENTAL
+                 3=BCP BANCO DE CRÉDITO DEL PERÚ
+                 4=INTERBANK
+                 5=BANCO INTERAMERICANO DE FINANZAS
+                 6=BANCO DE LA NACIÓN
+                 7=CMAC MAYNAS SA
+                 8=CAJA 8 (C8)
+                 9=CRAC CHAVIN SA
+                10=COOPERATIVA PACIFICO
+                11=BANCO FINANCIERO DEL PERU
+                12=HSBC BANK PERU SA
+                13=CAJA PIURA
+                14=CAJA HUANCAYO
+                15=FALABELLA
+                16=MI BANCO
+                17=COOPERATIVA ABACO
+                18=CRAC NUESTRA GENTE SAA
+                19=CAJA ICA
+                20=CAJA SULLANA
+                21=CAJA TRUJILLO
+                22=WESTER UNION
+                23=BANCO SANTANDER
+                24=CAJA SIPAN
+                25=SUNAT
+            `.replace(/\s+/g, ' '));
         };
 
         if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].includes(this.idBankForPayment)){
-            throw new Error(` El codigo de banco para realizar el pago solo puede ser:
-                1  = SCOTIABANK PERU SAA
-                2  = BBVA BANCO CONTINENTAL
-                3  = BCP BANCO DE CRÉDITO DEL PERÚ
-                4  = INTERBANK
-                5  = BANCO INTERAMERICANO DE FINANZAS
-                6  = BANCO DE LA NACIÓN
-                7  = CMAC MAYNAS SA
-                8  = CAJA 8 (C8)
-                9  = CRAC CHAVIN SA
-                10 = COOPERATIVA PACIFICO
-                11 = BANCO FINANCIERO DEL PERU
-                12 = HSBC BANK PERU SA
-                13 = CAJA PIURA
-                14 = CAJA HUANCAYO
-                15 = FALABELLA
-                16 = MI BANCO
-                17 = COOPERATIVA ABACO
-                18 = CRAC NUESTRA GENTE SAA
-                19 = CAJA ICA
-                20 = CAJA SULLANA
-                21 = CAJA TRUJILLO
-                22 = WESTER UNION
-                23 = BANCO SANTANDER
-                24 = CAJA SIPAN
-                25 = SUNAT
-            `);
+            throw new PaymentDetailExceptions('bankForPaymentID', ` El codigo de banco para realizar el pago solo puede ser:
+                 1=SCOTIABANK PERU SAA
+                 2=BBVA BANCO CONTINENTAL
+                 3=BCP BANCO DE CRÉDITO DEL PERÚ
+                 4=INTERBANK
+                 5=BANCO INTERAMERICANO DE FINANZAS
+                 6=BANCO DE LA NACIÓN
+                 7=CMAC MAYNAS SA
+                 8=CAJA 8 (C8)
+                 9=CRAC CHAVIN SA
+                10=COOPERATIVA PACIFICO
+                11=BANCO FINANCIERO DEL PERU
+                12=HSBC BANK PERU SA
+                13=CAJA PIURA
+                14=CAJA HUANCAYO
+                15=FALABELLA
+                16=MI BANCO
+                17=COOPERATIVA ABACO
+                18=CRAC NUESTRA GENTE SAA
+                19=CAJA ICA
+                20=CAJA SULLANA
+                21=CAJA TRUJILLO
+                22=WESTER UNION
+                23=BANCO SANTANDER
+                24=CAJA SIPAN
+                25=SUNAT
+            `.replace(/\s+/g, ' '));
         };
     };
 };

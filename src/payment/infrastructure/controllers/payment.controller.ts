@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
 import { CreatePaymentUseCase } from "../../application/create-payment.use-case";
+import { paymentExceptions } from "../../domain/exceptions/payment.exceptions";
+import { PaymentDetailExceptions } from "../../domain/exceptions/payment-detail.exception";
 
 export class PaymentController {
-    constructor(private createPaymentUseCase: CreatePaymentUseCase){
+    constructor(private createPaymentUseCase: CreatePaymentUseCase) {
         this.createPayment = this.createPayment.bind(this);
     }
 
-    async createPayment({body}:Request, res:Response){
+    async createPayment({ body }: Request, res: Response) {
         console.log("body", body);
         console.log("JSON.parse(body.paymentDetail)", body.paymentDetail);
-        
+
         try {
             const payment = await this.createPaymentUseCase.createNonTraditionalPayment(
                 {
@@ -27,18 +29,41 @@ export class PaymentController {
                 },
                 body.paymentDetail
             );
-            
+
             res.status(200).json({
                 responseCode: '00',
                 message: 'Pago creado',
                 data: payment
             })
-        } catch (error:any) {
-            res.status(400).json({
-                responseCode: '01',
-                message: error.message,
-                stack: error.stack
-            })
-        }
+        } catch (error) {
+            if (error instanceof paymentExceptions || error instanceof PaymentDetailExceptions) {
+                const errorCodes = {
+                    currencyType: '01',
+                    amountGreaterThanZero: '02',
+                    categoryID: '03',
+                    subCategoryID: '04',
+                    paymentType: '05',
+                    onlyAlphanumericReference: '06',
+                    emptyPaymentDetail: '07',
+                    equalPayments: '08',
+                    numbersOnlyBeneficiaryDocument: '09',
+                    paymentStatusID:'10',
+                    lengthInterbankAccountNumber: '11',
+                    bankID: '12',
+                    bankForPaymentID: '13'
+                };
+
+                res.status(422).json({
+                    responseCode: errorCodes[error.errorType],
+                    message: error.message
+                });
+            } else {
+                res.status(500).json({
+                    responseCode: '99',
+                    message: 'Internal Server Error',
+                    // stack: error.stack
+                });
+            };
+        };
     };
-}
+};

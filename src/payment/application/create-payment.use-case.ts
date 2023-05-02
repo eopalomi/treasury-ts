@@ -3,7 +3,7 @@ import { NonTradicionalPayment } from "../domain/model/paymentCategories/nontrad
 import { PaymentRepository } from "../domain/repositories/payment-nontradicional.repository";
 
 interface PaymentDTO {
-    paymentDate: Date,
+    paymentDate: string,
     referenceCode: string,
     paymentAmount: number,
     idcurrencyType: number,
@@ -31,10 +31,10 @@ interface PaymentDetailtDTO {
 };
 
 export class CreatePaymentUseCase {
-    constructor(private paymentRepository: PaymentRepository) {};
+    constructor(private paymentRepository: PaymentRepository) { };
 
-    createNonTraditionalPayment = async (paymentParams: PaymentDTO, paymentdetailParams: PaymentDetailtDTO[]):Promise<void> => {
-                
+    createNonTraditionalPayment = async (paymentParams: PaymentDTO, paymentdetailParams: PaymentDetailtDTO[]): Promise<void> => {
+
         const paymentDetail = paymentdetailParams.map(({
             idBank,
             banckAccountNumber,
@@ -76,6 +76,6 @@ export class CreatePaymentUseCase {
             paymentDetail
         );
 
-       await this.paymentRepository.create(payment, paymentDetail);
+        await this.paymentRepository.create(payment, paymentDetail);
     };
 };
