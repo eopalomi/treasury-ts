@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc && node build/server.js",
+    "start:local": "tsc && pm2-runtime start ecosystem.config.js --env local",
     "dev": "cross-env NODE_ENV=local ts-node-dev src/server.ts"
   },
   "author": "",
