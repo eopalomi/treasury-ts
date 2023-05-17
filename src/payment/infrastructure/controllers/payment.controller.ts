@@ -2,13 +2,12 @@ import { Request, Response } from "express";
 import { CreatePaymentUseCase } from "../../application/create-payment.use-case";
 import { paymentExceptions } from "../../domain/exceptions/payment.exceptions";
 import { PaymentDetailExceptions } from "../../domain/exceptions/payment-detail.exception";
+import { FindPaymentuseCase } from "../../application/find-paymeny.use-case";
 
 export class PaymentController {
-    constructor(private createPaymentUseCase: CreatePaymentUseCase) {
-        this.createPayment = this.createPayment.bind(this);
-    }
-
-    async createPayment({ body }: Request, res: Response) {
+    constructor(private createPaymentUseCase: CreatePaymentUseCase, private findPaymnetUseCase: FindPaymentuseCase) {}
+    
+    createPayment = async ({ body }: Request, res: Response) => {
         console.log("body", body);
         console.log("JSON.parse(body.paymentDetail)", body.paymentDetail);
 
@@ -61,9 +60,19 @@ export class PaymentController {
                 res.status(500).json({
                     responseCode: '99',
                     message: 'Internal Server Error',
-                    // stack: error.stack
                 });
             };
         };
+    };
+
+    findbyIdPaymnet = async ({params}: Request, res: Response)=>{
+        let idPayment:number = parseInt(params.id);
+        console.log("idPayment", idPayment)
+        const payment = await this.findPaymnetUseCase.findPayment(idPayment);
+        
+        res.send({
+            status:'00',
+            result: payment
+        })
     };
 };

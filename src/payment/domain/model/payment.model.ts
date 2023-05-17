@@ -27,7 +27,7 @@ export abstract class Payment {
         idPaymentSubcategory: number,
         paymentDetail: PaymentDetail[]
     ) {
-        this.paymentDate = formatedDateYYYYMMDD_hhmmss(new Date());
+        this.paymentDate = paymentDate ?? formatedDateYYYYMMDD_hhmmss(new Date());
         this.referenceCode = referenceCode;
         this.paymentAmount = paymentAmount;
         this.idcurrencyType = idcurrencyType;
@@ -148,12 +148,12 @@ export abstract class Payment {
     }
 
     validateAmount(){
-        this.paymentDetail.forEach(detail => {
-            this.totalAmountPayment += detail.paymentAmmount;
+        this.paymentDetail.forEach((detail: PaymentDetail)  => {
+            this.totalAmountPayment = this.totalAmountPayment + detail.paymentAmmount;
         });
 
         if (this.totalAmountPayment !== this.paymentAmount){
-            throw new paymentExceptions('equalPayments', 'El monto del pago en el detalle no es igual al monto total')
+            throw new paymentExceptions('equalPayments', `El monto del pago en el detalle no es igual al monto total (Monto Total = ${this.totalAmountPayment} - Monto ${this.paymentAmount}) `)
         };
     }
 }

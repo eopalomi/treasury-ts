@@ -88,9 +88,61 @@ export class PaymentPostgresRepository implements PaymentRepository {
         };
     }
 
-    findById(id: number): Promise<NonTradicionalPayment | null> {
-        throw new Error("Method not implemented.");
-    }
+    async findById(id: number): Promise<NonTradicionalPayment | null> {
+        const client = await this.pool.connect();
+        
+        client.query('BEGIN');
+
+        const queryPaymentHeader: string = `select * from pagos.tbpagtes where id_pagtes = ${id}`;
+        const queryPaymentDetail: string = `select * from pagos.tbdetabo where id_pagtes = ${id}`;
+        const resultpaymentHeader = await client.query(queryPaymentHeader);
+        const resultpaymentDetail = await client.query(queryPaymentDetail);
+
+        if (resultpaymentHeader.rowCount == 0){
+            return null;
+        };
+
+        if (resultpaymentDetail.rowCount == 0){
+            return null;
+        };
+
+        let paymentDetails: PaymentDetail[] = [];
+
+        resultpaymentDetail.rows.forEach((element) => {
+            const paymentDetail = new PaymentDetail(
+                element.id_bancos,
+                element.nu_ctaban,
+                element.nu_ctacci,
+                parseFloat(element.im_abonar),
+                element.no_benefi,
+                element.nu_docben,
+                element.de_detabo,
+                element.id_estpag,
+                element.id_blopag,
+                element.id_banpag,
+                element.nu_asient
+            );
+            
+            paymentDetails.push(paymentDetail);
+        });
+        
+        const nonTradicionalPayment = new NonTradicionalPayment({
+            paymentDate: resultpaymentHeader.rows[0].fe_regist,
+            referenceCode: resultpaymentHeader.rows[0].nu_refere,
+            paymentAmount: parseFloat(resultpaymentHeader.rows[0].im_totabo),
+            idcurrencyType: resultpaymentHeader.rows[0].id_tipmon,
+            paymentType: resultpaymentHeader.rows[0].id_tippag,
+            idPaymentCategory: resultpaymentHeader.rows[0].id_clapag,
+            exchangeRate: resultpaymentHeader.rows[0].im_tipcam,
+            idPaymentSubcategory: resultpaymentHeader.rows[0].id_subtippag,
+            expedientNumber: null, 
+            creditActivationDate: null,
+            customerName: resultpaymentHeader.rows[0].no_perpri, 
+            paymentDetail: paymentDetails
+        });
+        
+        return nonTradicionalPayment;
+    };
 
     update(payment: NonTradicionalPayment): Promise<void> {
         throw new Error("Method not implemented.");

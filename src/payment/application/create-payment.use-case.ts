@@ -61,20 +61,20 @@ export class CreatePaymentUseCase {
             accountingEntryNumber
         ));
 
-        const payment = new NonTradicionalPayment(
-            paymentParams.paymentDate,
-            paymentParams.referenceCode,
-            paymentParams.paymentAmount,
-            paymentParams.idcurrencyType,
-            paymentParams.paymentType,
-            paymentParams.idPaymentCategory,
-            paymentParams.exchangeRate,
-            paymentParams.idPaymentSubcategory,
-            paymentParams.expedientNumber,
-            paymentParams.creditActivationDate,
-            paymentParams.customerName,
+        const payment = new NonTradicionalPayment({
+            paymentDate: paymentParams.paymentDate,
+            referenceCode: paymentParams.referenceCode,
+            paymentAmount: paymentParams.paymentAmount,
+            idcurrencyType: paymentParams.idcurrencyType,
+            paymentType: paymentParams.paymentType,
+            idPaymentCategory: paymentParams.idPaymentCategory,
+            exchangeRate: paymentParams.exchangeRate,
+            idPaymentSubcategory: paymentParams.idPaymentSubcategory,
+            expedientNumber: paymentParams.expedientNumber,
+            creditActivationDate: paymentParams.creditActivationDate,
+            customerName: paymentParams.customerName,
             paymentDetail
-        );
+    });
 
         await this.paymentRepository.create(payment, paymentDetail);
     };
