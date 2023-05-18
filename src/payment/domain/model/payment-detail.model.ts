@@ -4,8 +4,8 @@ import { PaymentDetailExceptions } from "../exceptions/payment-detail.exception"
 export class PaymentDetail {
     public readonly paymentDetailDate: string;
     public readonly idBank: number;
-    public readonly banckAccountNumber: number;
-    public readonly interbankAccountNumber: string;
+    public readonly banckAccountNumber: string;
+    public readonly interbankAccountNumber: string | null;
     public readonly paymentAmmount: number;
     public readonly beneficiaryName: string;
     public readonly beneficiaryIdentificationDocument: string;
@@ -17,8 +17,8 @@ export class PaymentDetail {
 
     constructor(
         idBank: number,
-        banckAccountNumber: number,
-        interbankAccountNumber: string,
+        banckAccountNumber: string,
+        interbankAccountNumber: string | null,
         paymentAmmount: number,
         beneficiaryName: string,
         beneficiaryIdentificationDocument: string,
@@ -56,7 +56,7 @@ export class PaymentDetail {
             throw new PaymentDetailExceptions('paymentStatusID', 'El estado del pago solo puede ser: 1=Pendiente 2=Completado 3=Anulado 4=Por Confirmar')
         };
 
-        if (String(this.interbankAccountNumber).length !== 20){
+        if (this.interbankAccountNumber && this.interbankAccountNumber.length !== 20){
             throw new PaymentDetailExceptions('lengthInterbankAccountNumber', 'El numero de la cuenta interbancaria debe tener 20 digitos');
         };
 

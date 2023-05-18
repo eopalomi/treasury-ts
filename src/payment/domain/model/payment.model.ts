@@ -55,7 +55,7 @@ export abstract class Payment {
         }
 
         if (![1,3,4,2,5,10].includes(this.idPaymentCategory)){
-            throw new paymentExceptions( 'categoryID',`La categoria del pago(paymentType) solo puede ser: 
+            throw new paymentExceptions( 'categoryID',`La categoria del pago(paymentType=${this.idPaymentCategory}) solo puede ser: 
                  1=PROVEDORES
                  3=ENTREGAS A RENDIR
                  4=OBLIGACIONES FINANCIERAS

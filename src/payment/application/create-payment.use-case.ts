@@ -18,7 +18,7 @@ interface PaymentDTO {
 
 interface PaymentDetailtDTO {
     idBank: number,
-    banckAccountNumber: number,
+    banckAccountNumber: string,
     interbanckAccountNumber: string,
     paymentAmmount: number,
     beneficiaryName: string,

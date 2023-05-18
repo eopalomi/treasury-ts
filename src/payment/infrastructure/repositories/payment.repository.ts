@@ -1,15 +1,16 @@
-import { Pool } from "pg";
+import { Client, Pool } from "pg";
 import { PaymentRepository } from "../../domain/repositories/payment-nontradicional.repository";
 import { postgresDatabase } from "../config/postgres.client";
 import { NonTradicionalPayment } from "../../domain/model/paymentCategories/nontradicional-payment.model";
 import { PaymentDetail } from "../../domain/model/payment-detail.model";
+import { PaymentUpdateDTO } from "../../domain/paymentDTO/payment.dto";
 
 export class PaymentPostgresRepository implements PaymentRepository {
     private readonly pool: Pool;
 
     constructor() {
         this.pool = postgresDatabase.getConnection();
-    }
+    };
 
     async create(payment: NonTradicionalPayment, paymentDetail: PaymentDetail[]): Promise<void> {
         const client = await this.pool.connect();
@@ -40,7 +41,7 @@ export class PaymentPostgresRepository implements PaymentRepository {
                 )
                 returning id_pagtes;
             `;
-            console.log("query",query)
+            
             const queryResult = await client.query(query);
             
             paymentDetail.forEach(async ele => {
@@ -74,7 +75,7 @@ export class PaymentPostgresRepository implements PaymentRepository {
                         '${ele.paymentDetailDate}'
                     );
                 `;
-                console.log("detail",query)
+                
                 await client.query(query);
             });
             
@@ -90,66 +91,106 @@ export class PaymentPostgresRepository implements PaymentRepository {
 
     async findById(id: number): Promise<NonTradicionalPayment | null> {
         const client = await this.pool.connect();
-        
-        client.query('BEGIN');
 
-        const queryPaymentHeader: string = `select * from pagos.tbpagtes where id_pagtes = ${id}`;
-        const queryPaymentDetail: string = `select * from pagos.tbdetabo where id_pagtes = ${id}`;
-        const resultpaymentHeader = await client.query(queryPaymentHeader);
-        const resultpaymentDetail = await client.query(queryPaymentDetail);
-
-        if (resultpaymentHeader.rowCount == 0){
-            return null;
-        };
-
-        if (resultpaymentDetail.rowCount == 0){
-            return null;
-        };
-
-        let paymentDetails: PaymentDetail[] = [];
-
-        resultpaymentDetail.rows.forEach((element) => {
-            const paymentDetail = new PaymentDetail(
-                element.id_bancos,
-                element.nu_ctaban,
-                element.nu_ctacci,
-                parseFloat(element.im_abonar),
-                element.no_benefi,
-                element.nu_docben,
-                element.de_detabo,
-                element.id_estpag,
-                element.id_blopag,
-                element.id_banpag,
-                element.nu_asient
-            );
+        try {
+            const queryPaymentHeader: string = `select * from pagos.tbpagtes where id_pagtes = ${id}`;
+            const queryPaymentDetail: string = `select * from pagos.tbdetabo where id_pagtes = ${id}`;
+            const resultpaymentHeader = await client.query(queryPaymentHeader);
+            const resultpaymentDetail = await client.query(queryPaymentDetail);
             
-            paymentDetails.push(paymentDetail);
-        });
-        
-        const nonTradicionalPayment = new NonTradicionalPayment({
-            paymentDate: resultpaymentHeader.rows[0].fe_regist,
-            referenceCode: resultpaymentHeader.rows[0].nu_refere,
-            paymentAmount: parseFloat(resultpaymentHeader.rows[0].im_totabo),
-            idcurrencyType: resultpaymentHeader.rows[0].id_tipmon,
-            paymentType: resultpaymentHeader.rows[0].id_tippag,
-            idPaymentCategory: resultpaymentHeader.rows[0].id_clapag,
-            exchangeRate: resultpaymentHeader.rows[0].im_tipcam,
-            idPaymentSubcategory: resultpaymentHeader.rows[0].id_subtippag,
-            expedientNumber: null, 
-            creditActivationDate: null,
-            customerName: resultpaymentHeader.rows[0].no_perpri, 
-            paymentDetail: paymentDetails
-        });
-        
-        return nonTradicionalPayment;
+            if (resultpaymentHeader.rowCount == 0){
+                return null;
+            };
+
+            if (resultpaymentDetail.rowCount == 0){
+                return null;
+            };
+
+            let paymentDetails: PaymentDetail[] = [];
+
+            resultpaymentDetail.rows.forEach((element) => {
+                const paymentDetail = new PaymentDetail(
+                    element.id_bancos,
+                    element.nu_ctaban,
+                    element.nu_ctacci,
+                    parseFloat(element.im_abonar),
+                    element.no_benefi,
+                    element.nu_docben,
+                    element.de_detabo,
+                    element.id_estpag,
+                    element.id_blopag,
+                    element.id_banpag,
+                    element.nu_asient
+                );
+                
+                paymentDetails.push(paymentDetail);
+            });
+            
+            const nonTradicionalPayment = new NonTradicionalPayment({
+                paymentDate: resultpaymentHeader.rows[0].fe_regist,
+                referenceCode: resultpaymentHeader.rows[0].nu_refere,
+                paymentAmount: parseFloat(resultpaymentHeader.rows[0].im_totabo),
+                idcurrencyType: resultpaymentHeader.rows[0].id_tipmon,
+                paymentType: resultpaymentHeader.rows[0].id_clapag,
+                idPaymentCategory: resultpaymentHeader.rows[0].id_tippag,
+                exchangeRate: resultpaymentHeader.rows[0].im_tipcam,
+                idPaymentSubcategory: resultpaymentHeader.rows[0].id_subtippag,
+                expedientNumber: null, 
+                creditActivationDate: null,
+                customerName: resultpaymentHeader.rows[0].no_perpri, 
+                paymentDetail: paymentDetails
+            });
+            
+            return nonTradicionalPayment;
+        } catch (error ) {
+            throw new Error(String(error))
+        } finally {
+            await client.release();
+        }
     };
 
-    update(payment: NonTradicionalPayment): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
+    async update(id: number, paymentFields: PaymentUpdateDTO): Promise<void> {
+        const client = await this.pool.connect();
+
+        try {
+            let querySet = ``;
+
+            if (paymentFields.idBank) {
+                querySet += `id_bancos = ${paymentFields.idBank},`;
+            }
+
+            if (paymentFields.idBankForPayment) {
+                querySet += `id_banpag = ${paymentFields.idBankForPayment},`;
+            }
+
+            if (paymentFields.banckAccountNumber) {
+                querySet += `nu_ctaban = ${paymentFields.banckAccountNumber},`;
+            }
+
+            if (paymentFields.interbankAccountNumber) {
+                querySet += `nu_ctacci = ${paymentFields.interbankAccountNumber},`;
+            }
+
+            if (querySet.length > 0) {
+                await client.query('BEGIN');
+
+                const queryUpdate = `
+                    update pagos.tbdetabo set
+                        ${querySet.substring(0, querySet.length - 1)}
+                    where id_pagtes = ${id}
+                `;
+                console.log('update: ', queryUpdate)
+                await client.query(queryUpdate);
+                await client.query('COMMIT');
+            };
+        } catch (error:any) {
+            throw new Error(error);
+        } finally{
+            client.release();
+        }
+    };
 
     delete(id: number): Promise<void> {
         throw new Error("Method not implemented.");
     }
-
 }

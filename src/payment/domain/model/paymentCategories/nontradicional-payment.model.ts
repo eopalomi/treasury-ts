@@ -55,5 +55,4 @@ export class NonTradicionalPayment extends Payment {
             throw new Error("El nombre del cliente solo puede contener letras y numeros");
         }
     }
-
 }
