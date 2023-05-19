@@ -4,7 +4,7 @@ import { paymentExceptions } from "../../domain/exceptions/payment.exceptions";
 import { PaymentDetailExceptions } from "../../domain/exceptions/payment-detail.exception";
 import { FindPaymentuseCase } from "../../application/find-paymeny.use-case";
 import { UpdatePaymentUseCase } from "../../application/update-payment.use-case";
-import { PaymentUpdateDTO } from "../../domain/paymentDTO/payment.dto";
+import { UpdatePaymentDTO } from "../../application/DTOs/payment.dto";
 
 export class PaymentController {
     constructor(private createPaymentUseCase: CreatePaymentUseCase, private findPaymnetUseCase: FindPaymentuseCase, private updatePaymnetUseCase: UpdatePaymentUseCase) {}
@@ -83,7 +83,7 @@ export class PaymentController {
     };
 
     updatePayment = async ({body, params}: Request, res: Response)=>{
-        const payment: PaymentUpdateDTO = {
+        const payment: UpdatePaymentDTO = {
             idBank: body.idBank,
             banckAccountNumber: body.banckAccountNumber,
             interbankAccountNumber: body.interbankAccountNumber,

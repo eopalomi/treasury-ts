@@ -36,7 +36,6 @@ export abstract class Payment {
         this.exchangeRate = exchangeRate;
         this.idPaymentSubcategory = idPaymentSubcategory;
         this.paymentDetail = paymentDetail;
-        
         this.validateProperties();
         this.validateAmount();
     }

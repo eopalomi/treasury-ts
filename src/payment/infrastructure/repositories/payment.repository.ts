@@ -3,7 +3,7 @@ import { PaymentRepository } from "../../domain/repositories/payment-nontradicio
 import { postgresDatabase } from "../config/postgres.client";
 import { NonTradicionalPayment } from "../../domain/model/paymentCategories/nontradicional-payment.model";
 import { PaymentDetail } from "../../domain/model/payment-detail.model";
-import { PaymentUpdateDTO } from "../../domain/paymentDTO/payment.dto";
+import { UpdatePaymentDTO } from "../../application/DTOs/payment.dto";
 
 export class PaymentPostgresRepository implements PaymentRepository {
     private readonly pool: Pool;
@@ -149,7 +149,7 @@ export class PaymentPostgresRepository implements PaymentRepository {
         }
     };
 
-    async update(id: number, paymentFields: PaymentUpdateDTO): Promise<void> {
+    async update(id: number, paymentFields: UpdatePaymentDTO): Promise<void> {
         const client = await this.pool.connect();
 
         try {
@@ -164,11 +164,11 @@ export class PaymentPostgresRepository implements PaymentRepository {
             }
 
             if (paymentFields.banckAccountNumber) {
-                querySet += `nu_ctaban = ${paymentFields.banckAccountNumber},`;
+                querySet += `nu_ctaban = '${paymentFields.banckAccountNumber}',`;
             }
 
             if (paymentFields.interbankAccountNumber) {
-                querySet += `nu_ctacci = ${paymentFields.interbankAccountNumber},`;
+                querySet += `nu_ctacci = '${paymentFields.interbankAccountNumber}',`;
             }
 
             if (querySet.length > 0) {
@@ -191,6 +191,6 @@ export class PaymentPostgresRepository implements PaymentRepository {
     };
 
     delete(id: number): Promise<void> {
-        throw new Error("Method not implemented.");
+        throw new Error("No es posible eliminar Pagos");
     }
 }
