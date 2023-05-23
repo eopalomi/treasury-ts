@@ -1,24 +1,27 @@
-import { Client, Pool } from "pg";
-import { PaymentRepository } from "../../domain/repositories/payment-nontradicional.repository";
-import { postgresDatabase } from "../config/postgres.client";
-import { NonTradicionalPayment } from "../../domain/model/paymentCategories/nontradicional-payment.model";
-import { PaymentDetail } from "../../domain/model/payment-detail.model";
-import { UpdatePaymentDTO } from "../../application/DTOs/payment.dto";
+import { Client, Pool } from 'pg';
+import { PaymentRepository } from '../../domain/repositories/payment-nontradicional.repository';
+import { postgresDatabase } from '../config/postgres.client';
+import { NonTradicionalPayment } from '../../domain/model/paymentCategories/nontradicional-payment.model';
+import { PaymentDetail } from '../../domain/model/payment-detail.model';
+import { UpdatePaymentDTO } from '../../application/DTOs/payment.dto';
 
 export class PaymentPostgresRepository implements PaymentRepository {
-    private readonly pool: Pool;
+  private readonly pool: Pool;
 
-    constructor() {
-        this.pool = postgresDatabase.getConnection();
-    };
+  constructor() {
+    this.pool = postgresDatabase.getConnection();
+  }
 
-    async create(payment: NonTradicionalPayment, paymentDetail: PaymentDetail[]): Promise<void> {
-        const client = await this.pool.connect();
+  async create(
+    payment: NonTradicionalPayment,
+    paymentDetail: PaymentDetail[]
+  ): Promise<void> {
+    const client = await this.pool.connect();
 
-        try {
-            await client.query('BEGIN');
+    try {
+      await client.query('BEGIN');
 
-            const query = `
+      const query = `
                 insert into pagos.tbpagtes (
                     fe_regist,
                     nu_refere,
@@ -41,11 +44,11 @@ export class PaymentPostgresRepository implements PaymentRepository {
                 )
                 returning id_pagtes;
             `;
-            
-            const queryResult = await client.query(query);
-            
-            paymentDetail.forEach(async ele => {
-                const query = `
+
+      const queryResult = await client.query(query);
+
+      paymentDetail.forEach(async (ele) => {
+        const query = `
                     insert into pagos.tbdetabo (
                         id_pagtes, 
                         id_bancos, 
@@ -75,122 +78,122 @@ export class PaymentPostgresRepository implements PaymentRepository {
                         '${ele.paymentDetailDate}'
                     );
                 `;
-                
-                await client.query(query);
-            });
-            
-            await client.query('COMMIT');
-        } catch (error:any) {
-            console.log("ERROR: ", error);
-            await client.query('ROLLBACK');
-            throw new Error(error);
-        } finally {
-            await client.release();
-        };
+
+        await client.query(query);
+      });
+
+      await client.query('COMMIT');
+    } catch (error: any) {
+      console.log('ERROR: ', error);
+      await client.query('ROLLBACK');
+      throw new Error(error);
+    } finally {
+      await client.release();
     }
+  }
 
-    async findById(id: number): Promise<NonTradicionalPayment | null> {
-        const client = await this.pool.connect();
+  async findById(id: number): Promise<NonTradicionalPayment | null> {
+    const client = await this.pool.connect();
 
-        try {
-            const queryPaymentHeader: string = `select * from pagos.tbpagtes where id_pagtes = ${id}`;
-            const queryPaymentDetail: string = `select * from pagos.tbdetabo where id_pagtes = ${id}`;
-            const resultpaymentHeader = await client.query(queryPaymentHeader);
-            const resultpaymentDetail = await client.query(queryPaymentDetail);
-            
-            if (resultpaymentHeader.rowCount == 0){
-                return null;
-            };
+    try {
+      const queryPaymentHeader = `select * from pagos.tbpagtes where id_pagtes = ${id}`;
+      const queryPaymentDetail = `select * from pagos.tbdetabo where id_pagtes = ${id}`;
+      const resultpaymentHeader = await client.query(queryPaymentHeader);
+      const resultpaymentDetail = await client.query(queryPaymentDetail);
 
-            if (resultpaymentDetail.rowCount == 0){
-                return null;
-            };
+      if (resultpaymentHeader.rowCount == 0) {
+        return null;
+      }
 
-            let paymentDetails: PaymentDetail[] = [];
+      if (resultpaymentDetail.rowCount == 0) {
+        return null;
+      }
 
-            resultpaymentDetail.rows.forEach((element) => {
-                const paymentDetail = new PaymentDetail(
-                    element.id_bancos,
-                    element.nu_ctaban,
-                    element.nu_ctacci,
-                    parseFloat(element.im_abonar),
-                    element.no_benefi,
-                    element.nu_docben,
-                    element.de_detabo,
-                    element.id_estpag,
-                    element.id_blopag,
-                    element.id_banpag,
-                    element.nu_asient
-                );
-                
-                paymentDetails.push(paymentDetail);
-            });
-            
-            const nonTradicionalPayment = new NonTradicionalPayment({
-                paymentDate: resultpaymentHeader.rows[0].fe_regist,
-                referenceCode: resultpaymentHeader.rows[0].nu_refere,
-                paymentAmount: parseFloat(resultpaymentHeader.rows[0].im_totabo),
-                idcurrencyType: resultpaymentHeader.rows[0].id_tipmon,
-                paymentType: resultpaymentHeader.rows[0].id_clapag,
-                idPaymentCategory: resultpaymentHeader.rows[0].id_tippag,
-                exchangeRate: resultpaymentHeader.rows[0].im_tipcam,
-                idPaymentSubcategory: resultpaymentHeader.rows[0].id_subtippag,
-                expedientNumber: null, 
-                creditActivationDate: null,
-                customerName: resultpaymentHeader.rows[0].no_perpri, 
-                paymentDetail: paymentDetails
-            });
-            
-            return nonTradicionalPayment;
-        } catch (error ) {
-            throw new Error(String(error))
-        } finally {
-            await client.release();
-        }
-    };
+      const paymentDetails: PaymentDetail[] = [];
 
-    async update(id: number, paymentFields: UpdatePaymentDTO): Promise<void> {
-        const client = await this.pool.connect();
+      resultpaymentDetail.rows.forEach((element) => {
+        const paymentDetail = new PaymentDetail(
+          element.id_bancos,
+          element.nu_ctaban,
+          element.nu_ctacci,
+          parseFloat(element.im_abonar),
+          element.no_benefi,
+          element.nu_docben,
+          element.de_detabo,
+          element.id_estpag,
+          element.id_blopag,
+          element.id_banpag,
+          element.nu_asient
+        );
 
-        try {
-            let querySet = ``;
+        paymentDetails.push(paymentDetail);
+      });
 
-            if (paymentFields.idBank) {
-                querySet += `id_bancos = ${paymentFields.idBank},`;
-            }
+      const nonTradicionalPayment = new NonTradicionalPayment({
+        paymentDate: resultpaymentHeader.rows[0].fe_regist,
+        referenceCode: resultpaymentHeader.rows[0].nu_refere,
+        paymentAmount: parseFloat(resultpaymentHeader.rows[0].im_totabo),
+        idcurrencyType: resultpaymentHeader.rows[0].id_tipmon,
+        paymentType: resultpaymentHeader.rows[0].id_clapag,
+        idPaymentCategory: resultpaymentHeader.rows[0].id_tippag,
+        exchangeRate: resultpaymentHeader.rows[0].im_tipcam,
+        idPaymentSubcategory: resultpaymentHeader.rows[0].id_subtippag,
+        expedientNumber: null,
+        creditActivationDate: null,
+        customerName: resultpaymentHeader.rows[0].no_perpri,
+        paymentDetail: paymentDetails
+      });
 
-            if (paymentFields.idBankForPayment) {
-                querySet += `id_banpag = ${paymentFields.idBankForPayment},`;
-            }
+      return nonTradicionalPayment;
+    } catch (error) {
+      throw new Error(String(error));
+    } finally {
+      await client.release();
+    }
+  }
 
-            if (paymentFields.banckAccountNumber) {
-                querySet += `nu_ctaban = '${paymentFields.banckAccountNumber}',`;
-            }
+  async update(id: number, paymentFields: UpdatePaymentDTO): Promise<void> {
+    const client = await this.pool.connect();
 
-            if (paymentFields.interbankAccountNumber) {
-                querySet += `nu_ctacci = '${paymentFields.interbankAccountNumber}',`;
-            }
+    try {
+      let querySet = '';
 
-            if (querySet.length > 0) {
-                await client.query('BEGIN');
+      if (paymentFields.idBank) {
+        querySet += `id_bancos = ${paymentFields.idBank},`;
+      }
 
-                const queryUpdate = `
+      if (paymentFields.idBankForPayment) {
+        querySet += `id_banpag = ${paymentFields.idBankForPayment},`;
+      }
+
+      if (paymentFields.banckAccountNumber) {
+        querySet += `nu_ctaban = '${paymentFields.banckAccountNumber}',`;
+      }
+
+      if (paymentFields.interbankAccountNumber) {
+        querySet += `nu_ctacci = '${paymentFields.interbankAccountNumber}',`;
+      }
+
+      if (querySet.length > 0) {
+        await client.query('BEGIN');
+
+        const queryUpdate = `
                     update pagos.tbdetabo set
                         ${querySet.substring(0, querySet.length - 1)}
                     where id_pagtes = ${id}
                 `;
-                console.log('update: ', queryUpdate)
-                await client.query(queryUpdate);
-                await client.query('COMMIT');
-            };
-        } catch (error:any) {
-            throw new Error(error);
-        } finally{
-            client.release();
-        }
-    };
-
-    delete(id: number): Promise<void> {
-        throw new Error("No es posible eliminar Pagos");
+        console.log('update: ', queryUpdate);
+        await client.query(queryUpdate);
+        await client.query('COMMIT');
+      }
+    } catch (error: any) {
+      throw new Error(error);
+    } finally {
+      client.release();
     }
+  }
+
+  delete(id: number): Promise<void> {
+    throw new Error('No es posible eliminar Pagos');
+  }
 }

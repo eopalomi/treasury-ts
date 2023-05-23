@@ -1,6 +1,3 @@
-
 export class PaymentMapper {
-    static paymnetToDTO(){
-        
-    }
+  static paymnetToDTO() {}
 }
