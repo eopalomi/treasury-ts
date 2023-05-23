@@ -17,10 +17,10 @@ export interface NonTraditionalPaymentDTO {
   expedientNumber: number | null;
   creditActivationDate: Date | null;
   customerName: string;
-  paymentDetail: PaymentDetail[];
+  paymentDetail: PaymentDetailDTO[];
 }
 
-interface PaymentDetail {
+export interface PaymentDetailDTO {
   paymentDetailDate: string;
   idBank: number;
   banckAccountNumber: string;

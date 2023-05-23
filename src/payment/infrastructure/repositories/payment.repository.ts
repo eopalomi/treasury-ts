@@ -3,7 +3,11 @@ import { PaymentRepository } from '../../domain/repositories/payment-nontradicio
 import { postgresDatabase } from '../config/postgres.client';
 import { NonTradicionalPayment } from '../../domain/model/paymentCategories/nontradicional-payment.model';
 import { PaymentDetail } from '../../domain/model/payment-detail.model';
-import { UpdatePaymentDTO } from '../../application/DTOs/payment.dto';
+import {
+  NonTraditionalPaymentDTO,
+  PaymentDetailDTO,
+  UpdatePaymentDTO
+} from '../../application/DTOs/payment.dto';
 
 export class PaymentPostgresRepository implements PaymentRepository {
   private readonly pool: Pool;
@@ -92,7 +96,7 @@ export class PaymentPostgresRepository implements PaymentRepository {
     }
   }
 
-  async findById(id: number): Promise<NonTradicionalPayment | null> {
+  async findById(id: number): Promise<NonTraditionalPaymentDTO | null> {
     const client = await this.pool.connect();
 
     try {
@@ -109,27 +113,28 @@ export class PaymentPostgresRepository implements PaymentRepository {
         return null;
       }
 
-      const paymentDetails: PaymentDetail[] = [];
+      const paymentDetails: PaymentDetailDTO[] = [];
 
       resultpaymentDetail.rows.forEach((element) => {
-        const paymentDetail = new PaymentDetail(
-          element.id_bancos,
-          element.nu_ctaban,
-          element.nu_ctacci,
-          parseFloat(element.im_abonar),
-          element.no_benefi,
-          element.nu_docben,
-          element.de_detabo,
-          element.id_estpag,
-          element.id_blopag,
-          element.id_banpag,
-          element.nu_asient
-        );
+        const paymentDetail: PaymentDetailDTO = {
+          paymentDetailDate: '',
+          idBank: element.id_bancos,
+          banckAccountNumber: element.nu_ctaban,
+          interbankAccountNumber: element.nu_ctacci,
+          paymentAmmount: parseFloat(element.im_abonar),
+          beneficiaryName: element.no_benefi,
+          beneficiaryIdentificationDocument: element.nu_docben,
+          paymentDetails: element.de_detabo,
+          idPaymentStatus: element.id_estpag,
+          idPaymenOrder: element.id_blopag,
+          idBankForPayment: element.id_banpag,
+          accountingEntryNumber: element.nu_asient
+        };
 
         paymentDetails.push(paymentDetail);
       });
 
-      const nonTradicionalPayment = new NonTradicionalPayment({
+      const nonTradicionalPayment: NonTraditionalPaymentDTO = {
         paymentDate: resultpaymentHeader.rows[0].fe_regist,
         referenceCode: resultpaymentHeader.rows[0].nu_refere,
         paymentAmount: parseFloat(resultpaymentHeader.rows[0].im_totabo),
@@ -142,7 +147,7 @@ export class PaymentPostgresRepository implements PaymentRepository {
         creditActivationDate: null,
         customerName: resultpaymentHeader.rows[0].no_perpri,
         paymentDetail: paymentDetails
-      });
+      };
 
       return nonTradicionalPayment;
     } catch (error) {

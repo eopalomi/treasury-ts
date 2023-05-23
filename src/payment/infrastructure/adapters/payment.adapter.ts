@@ -11,8 +11,8 @@ export const paymentAdapter = (app: express.Application) => {
   const paymentRepository = new PaymentPostgresRepository();
 
   const createPaymentUseCase = new CreatePaymentUseCase(paymentRepository);
-  const findPaymentUseCase = new FindPaymentuseCase(paymentRepository);
   const updatePaymentUseCase = new UpdatePaymentUseCase(paymentRepository);
+  const findPaymentUseCase = new FindPaymentuseCase(paymentRepository);
 
   const controller = new PaymentController(
     createPaymentUseCase,
