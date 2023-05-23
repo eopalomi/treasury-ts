@@ -13,7 +13,7 @@ interface CreateOrdenPagoParams {
     transacctionCode: string,
     accountantNumber: number,
     accountantDate: Date
-};
+}
 
 export class CreatePaymentOrderUseCase {
     constructor(private readonly paymentOrderRepository: PaymentOrderRepository){}

@@ -36,5 +36,5 @@ export class PaymentOrder {
         this._transacctionCode = _transacctionCode;
         this._accountantNumber = _accountantNumber;
         this._accountantDate = _accountantDate;
-    };
+    }
 }

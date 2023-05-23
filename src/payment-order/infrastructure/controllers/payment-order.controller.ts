@@ -9,7 +9,7 @@ export class PaymentOrderController {
         this.finPaymentOrder = this.finPaymentOrder.bind(this);
     }
 
-    public async createPaymentOrder({ body }: Request, res: Response): Promise<any> {
+    public async createPaymentOrder({ body }: Request, res: Response): Promise<void> {
         try {
             const paymentOrder = await this.createPaymentOrderUseCase.execute({
                 paymentAmount: body.paymentAmount,
@@ -30,21 +30,21 @@ export class PaymentOrderController {
                 message: 'Orden Pago Creada',
                 data: paymentOrder
             })
-        } catch (error: any) {
+        } catch (error) {
             res.status(400).json({
                 responseCode: '01',
-                message: error.message,
-                stack: error.stack
+                message: (error as Error).message,
+                stack: (error as Error).stack
             })
         }
-    };
+    }
 
-    public async finPaymentOrder(req: Request, res: Response): Promise<any> {
+    public async finPaymentOrder(req: Request, res: Response): Promise<void> {
         const id = req.params.id;
         console.log("req.params", req.params)
 
         try {
-            let paymentOrder = await this.getPaymentOrderUseCase.getPaymentOrder(parseInt(id));
+            const paymentOrder = await this.getPaymentOrderUseCase.getPaymentOrder(parseInt(id));
             console.log("payment", paymentOrder)
 
             if (!paymentOrder){
@@ -60,12 +60,12 @@ export class PaymentOrderController {
                     data: paymentOrder
                 });
             }
-        } catch (error: any) {
+        } catch (e) {
             res.status(400).json({
                 responseCode: '01',
-                message: error.message,
-                stack: error.stack
+                message: (e as Error).message,
+                stack: (e as Error).stack
             })
         }
-    };
-};
+    }
+}

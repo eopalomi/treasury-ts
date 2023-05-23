@@ -11,7 +11,7 @@ interface CreateOrdenPagoParams {
     transacctionCode: string,
     accountantNumber: number,
     accountantDate: Date
-};
+}
 
 
 export class UpdatePaymentOrder {
