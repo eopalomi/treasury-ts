@@ -3,7 +3,6 @@ import { PaymentRepository } from "../../domain/repositories/payment-nontradicio
 import { postgresDatabase } from "../config/postgres.client";
 import { NonTradicionalPayment } from "../../domain/model/paymentCategories/nontradicional-payment.model";
 import { PaymentDetail } from "../../domain/model/payment-detail.model";
-import { UpdatePaymentDTO } from "../../application/DTOs/payment.dto";
 
 export class PaymentPostgresRepository implements PaymentRepository {
     private readonly pool: Pool;
@@ -149,7 +148,7 @@ export class PaymentPostgresRepository implements PaymentRepository {
         }
     };
 
-    async update(id: number, paymentFields: UpdatePaymentDTO): Promise<void> {
+    async update(id: number, paymentFields: Partial<PaymentDetail>): Promise<void> {
         const client = await this.pool.connect();
 
         try {
