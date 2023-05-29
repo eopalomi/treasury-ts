@@ -1,67 +1,86 @@
-import { formatedDateYYYYMMDD_hhmmss } from "../../../shared/utils/date-utils";
-import { PaymentDetailExceptions } from "../exceptions/payment-detail.exception";
+import { formatedDateYYYYMMDD_hhmmss } from '../../../shared/utils/date-utils';
+import { PaymentDetailExceptions } from '../exceptions/payment.exceptions';
 
 export class PaymentDetail {
-    public readonly paymentDetailDate: string;
-    public readonly idBank: number;
-    public readonly banckAccountNumber: string;
-    public readonly interbankAccountNumber: string | null;
-    public readonly paymentAmmount: number;
-    public readonly beneficiaryName: string;
-    public readonly beneficiaryIdentificationDocument: string;
-    public readonly paymentDetails: string;
-    public readonly idPaymentStatus: number;
-    public readonly idPaymenOrder: number;
-    public readonly idBankForPayment: number;
-    public readonly accountingEntryNumber: number;
+  public readonly paymentDetailDate: string;
+  public readonly idBank: number;
+  public readonly banckAccountNumber: string;
+  public readonly interbankAccountNumber: string | null;
+  public readonly paymentAmmount: number;
+  public readonly beneficiaryName: string;
+  public readonly beneficiaryIdentificationDocument: string;
+  public readonly paymentDetails: string;
+  public readonly idPaymentStatus: number;
+  public readonly idPaymenOrder: number;
+  public readonly idBankForPayment: number;
+  public readonly accountingEntryNumber: number;
 
-    constructor(
-        idBank: number,
-        banckAccountNumber: string,
-        interbankAccountNumber: string | null,
-        paymentAmmount: number,
-        beneficiaryName: string,
-        beneficiaryIdentificationDocument: string,
-        paymentDetails: string,
-        idPaymentStatus: number,
-        idPaymenOrder: number,
-        idBankForPayment: number,
-        accountingEntryNumber: number
-    ) {
-        this.idBank = idBank;
-        this.banckAccountNumber = banckAccountNumber;
-        this.interbankAccountNumber = interbankAccountNumber;
-        this.paymentAmmount = paymentAmmount;
-        this.beneficiaryName = beneficiaryName;
-        this.beneficiaryIdentificationDocument = beneficiaryIdentificationDocument;
-        this.paymentDetails = paymentDetails;
-        this.idPaymentStatus = idPaymentStatus;
-        this.idPaymenOrder = idPaymenOrder;
-        this.idBankForPayment = idBankForPayment;
-        this.accountingEntryNumber = accountingEntryNumber;
-        
-        // this.paymentDetailDate = new Date().toISOString().slice(0, 10);
-        this.paymentDetailDate = formatedDateYYYYMMDD_hhmmss(new Date());
-        this.validate();
+  constructor(
+    idBank: number,
+    banckAccountNumber: string,
+    interbankAccountNumber: string | null,
+    paymentAmmount: number,
+    beneficiaryName: string,
+    beneficiaryIdentificationDocument: string,
+    paymentDetails: string,
+    idPaymentStatus: number,
+    idPaymenOrder: number,
+    idBankForPayment: number,
+    accountingEntryNumber: number
+  ) {
+    this.idBank = idBank;
+    this.banckAccountNumber = banckAccountNumber;
+    this.interbankAccountNumber = interbankAccountNumber;
+    this.paymentAmmount = paymentAmmount;
+    this.beneficiaryName = beneficiaryName;
+    this.beneficiaryIdentificationDocument = beneficiaryIdentificationDocument;
+    this.paymentDetails = paymentDetails;
+    this.idPaymentStatus = idPaymentStatus;
+    this.idPaymenOrder = idPaymenOrder;
+    this.idBankForPayment = idBankForPayment;
+    this.accountingEntryNumber = accountingEntryNumber;
+
+    // this.paymentDetailDate = new Date().toISOString().slice(0, 10);
+    this.paymentDetailDate = formatedDateYYYYMMDD_hhmmss(new Date());
+    this.validate();
+  }
+
+  validate() {
+    const regex = /^[0-9]+$/;
+
+    if (!regex.test(this.beneficiaryIdentificationDocument)) {
+      throw new PaymentDetailExceptions(
+        'numbersOnlyBeneficiaryDocument',
+        'El documento solo puede contener numeros'
+      );
     }
 
-    validate(){
-        const regex: RegExp = /^[0-9]+$/;
+    if (![1, 2, 3, 4].includes(this.idPaymentStatus)) {
+      throw new PaymentDetailExceptions(
+        'paymentStatusID',
+        'El estado del pago solo puede ser: 1=Pendiente 2=Completado 3=Anulado 4=Por Confirmar'
+      );
+    }
 
-        if (!regex.test(this.beneficiaryIdentificationDocument)){
-            throw new PaymentDetailExceptions('numbersOnlyBeneficiaryDocument', 'El documento solo puede contener numeros');
-        };
+    if (
+      this.interbankAccountNumber &&
+      this.interbankAccountNumber.length !== 20
+    ) {
+      throw new PaymentDetailExceptions(
+        'lengthInterbankAccountNumber',
+        'El numero de la cuenta interbancaria debe tener 20 digitos'
+      );
+    }
 
-        if (![1,2,3,4].includes(this.idPaymentStatus)){
-            throw new PaymentDetailExceptions('paymentStatusID', 'El estado del pago solo puede ser: 1=Pendiente 2=Completado 3=Anulado 4=Por Confirmar')
-        };
-
-        if (this.interbankAccountNumber && this.interbankAccountNumber.length !== 20){
-            throw new PaymentDetailExceptions('lengthInterbankAccountNumber', 'El numero de la cuenta interbancaria debe tener 20 digitos');
-        };
-
-        if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].includes(this.idBank)){
-            throw new PaymentDetailExceptions('bankID', ` El codigo de banco solo puede ser:
+    if (
+      ![
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25
+      ].includes(this.idBank)
+    ) {
+      throw new PaymentDetailExceptions(
+        'bankID',
+        ` El codigo de banco solo puede ser:
                  1=SCOTIABANK PERU SAA
                  2=BBVA BANCO CONTINENTAL
                  3=BCP BANCO DE CRÉDITO DEL PERÚ
@@ -87,11 +106,19 @@ export class PaymentDetail {
                 23=BANCO SANTANDER
                 24=CAJA SIPAN
                 25=SUNAT
-            `.replace(/\s+/g, ' '));
-        };
+            `.replace(/\s+/g, ' ')
+      );
+    }
 
-        if (![1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25].includes(this.idBankForPayment)){
-            throw new PaymentDetailExceptions('bankForPaymentID', ` El codigo de banco para realizar el pago solo puede ser:
+    if (
+      ![
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+        21, 22, 23, 24, 25
+      ].includes(this.idBankForPayment)
+    ) {
+      throw new PaymentDetailExceptions(
+        'bankForPaymentID',
+        ` El codigo de banco para realizar el pago solo puede ser:
                  1=SCOTIABANK PERU SAA
                  2=BBVA BANCO CONTINENTAL
                  3=BCP BANCO DE CRÉDITO DEL PERÚ
@@ -117,7 +144,8 @@ export class PaymentDetail {
                 23=BANCO SANTANDER
                 24=CAJA SIPAN
                 25=SUNAT
-            `.replace(/\s+/g, ' '));
-        };
-    };
-};
+            `.replace(/\s+/g, ' ')
+      );
+    }
+  }
+}

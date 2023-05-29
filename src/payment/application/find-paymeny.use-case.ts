@@ -1,11 +1,17 @@
 import { PaymentRepository } from "../domain/repositories/payment-nontradicional.repository";
+import { NonTraditionalPaymentDTO } from "./DTOs/payment.dto";
+import { PaymentMapper } from "./mappers/payment.mapper";
 
-export class FindPaymentuseCase {
-    constructor(private paymentRepository: PaymentRepository){}
+export class FindPaymentUseCase {
+    constructor(private paymentRepository: PaymentRepository) { }
 
-    findPayment = async (id: number) =>{
+    findPayment = async (id: number): Promise<NonTraditionalPaymentDTO | null> => {
         const payment = await this.paymentRepository.findById(id);
 
-        return payment;
+        if (payment) {
+            return PaymentMapper.paymentToDTO(payment);
+        }
+
+        return null;
     };
 }

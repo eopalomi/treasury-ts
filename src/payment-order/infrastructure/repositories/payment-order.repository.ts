@@ -4,22 +4,20 @@ import { PaymentOrderRepository } from '../../domain/repositories/payment-order.
 import { postgresDatabase } from '../adapters/config/postgres.client';
 
 export class PaymentOrderPostgresRepository implements PaymentOrderRepository {
-    private readonly pool: Pool;
+  private readonly pool: Pool;
 
-    constructor() {
-        this.pool = postgresDatabase.getConnection();
-    }
+  constructor() {
+    this.pool = postgresDatabase.getConnection();
+  }
 
-    async create(paymentOrder: PaymentOrder): Promise<void> {
-        const client = await this.pool.connect()
-        
-        try {
-            
-            await client.query('BEGIN');
-            // Escucha el evento 'query' del objeto de cliente pg
-            
-         
-            const query = `insert into pagos.tbblopag (
+  async create(paymentOrder: PaymentOrder): Promise<void> {
+    const client = await this.pool.connect();
+
+    try {
+      await client.query('BEGIN');
+      // Escucha el evento 'query' del objeto de cliente pg
+
+      const query = `insert into pagos.tbblopag (
                 im_montot,
                 id_estpag,
                 id_forpag,
@@ -43,102 +41,100 @@ export class PaymentOrderPostgresRepository implements PaymentOrderRepository {
                 '${paymentOrder._paymentDate}',
                 '${paymentOrder._transacctionCode}'
              )`;
-            console.log("query", query);
-            // const values = [
-            //     paymentOrder._paymentAmount,
-            //     paymentOrder._idPaymentStatus,
-            //     paymentOrder._idPaymentType,
-            //     paymentOrder._idPaymentBank,
-            //     paymentOrder._idUser,
-            //     paymentOrder._idTypeCurrency,
-            //     paymentOrder._paymentDate,
-            //     paymentOrder._transacctionCode
-            // ];
-            // console.log("values", values);
-            let data = await client.query(query);
+      console.log('query', query);
+      // const values = [
+      //     paymentOrder._paymentAmount,
+      //     paymentOrder._idPaymentStatus,
+      //     paymentOrder._idPaymentType,
+      //     paymentOrder._idPaymentBank,
+      //     paymentOrder._idUser,
+      //     paymentOrder._idTypeCurrency,
+      //     paymentOrder._paymentDate,
+      //     paymentOrder._transacctionCode
+      // ];
+      // console.log("values", values);
+      const data = await client.query(query);
 
-            // let data = await client.query(query, values,  (err, result) => {
-            //     if (err) {
-            //         console.log("result", result)
-            //       return console.error('Error executing query', err.stack)
-            //     }
-            //     console.log(result.rows)
-            //   });
+      // let data = await client.query(query, values,  (err, result) => {
+      //     if (err) {
+      //         console.log("result", result)
+      //       return console.error('Error executing query', err.stack)
+      //     }
+      //     console.log(result.rows)
+      //   });
 
-            await client.query('COMMIT');
-
-        } catch (error: any) {
-            
-            console.log("error", error)
-            console.log("error", error.stack)
-            await client.query('ROLLBACK');
-            throw error;
-        } finally {
-            client.release();
-        };
-    };
-
-    async findById(id: number): Promise<PaymentOrder | null> {
-        const client = await this.pool.connect();
-
-        try {
-            const query = `select * from pagos.tbblopag where id_blopag = ${id}`;
-            
-            let result = await client.query(query);
-
-            if (!result.rows.length){
-                return null;
-            }
-
-            const row = result.rows[0];
-
-            let columnToPropertyMap = {
-                _paymentAmount: 'im_montot',
-                _idPaymentStatus: 'id_estpag',
-                _idPaymentType: 'id_forpag',
-                _idPaymentMethod: 'id_medpag',
-                _idPaymentBank: 'id_bancos',
-                _idUser: 'co_usuari',
-                _idTypeCurrency: 'id_tipmon',
-                _paymentDate: 'fe_pagblo',
-                _transacctionCode: 'nu_traban',
-                _accountantNumber: 'nu_asient',
-                _accountantDate: 'fe_asient'
-            };
-            
-            return new PaymentOrder(
-                row[columnToPropertyMap._paymentAmount],
-                row[columnToPropertyMap._idPaymentStatus],
-                row[columnToPropertyMap._idPaymentType],
-                row[columnToPropertyMap._idPaymentMethod],
-                row[columnToPropertyMap._idPaymentBank],
-                row[columnToPropertyMap._idUser],
-                row[columnToPropertyMap._idTypeCurrency],
-                new Date(row[columnToPropertyMap._paymentDate]),
-                row[columnToPropertyMap._transacctionCode],
-                row[columnToPropertyMap._accountantNumber],
-                new Date(row[columnToPropertyMap._accountantDate])
-            )
-        } catch (error) {
-            console.log("ERROR:", error)
-            await client.query('ROLLBACK');
-            throw new Error("Error al buscar la orde de pago");
-        } finally{
-            client.release();
-        };
-    };
-
-    update(ordenDePago: PaymentOrder): Promise<void> {
-        throw new Error('Method not implemented.');
-    };
-    delete(id: number): Promise<void> {
-        throw new Error('Method not implemented.');
-    };
-
-    findAll(): Promise<PaymentOrder> {
-        throw new Error('Method not implemented.');
+      await client.query('COMMIT');
+    } catch (error: any) {
+      console.log('error', error);
+      console.log('error', error.stack);
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
     }
-    updateAll(ordenDePago: PaymentOrder[]): Promise<void> {
-        throw new Error('Method not implemented.');
+  }
+
+  async findById(id: number): Promise<PaymentOrder | null> {
+    const client = await this.pool.connect();
+
+    try {
+      const query = `select * from pagos.tbblopag where id_blopag = ${id}`;
+
+      const result = await client.query(query);
+
+      if (!result.rows.length) {
+        return null;
+      }
+
+      const row = result.rows[0];
+
+      const columnToPropertyMap = {
+        _paymentAmount: 'im_montot',
+        _idPaymentStatus: 'id_estpag',
+        _idPaymentType: 'id_forpag',
+        _idPaymentMethod: 'id_medpag',
+        _idPaymentBank: 'id_bancos',
+        _idUser: 'co_usuari',
+        _idTypeCurrency: 'id_tipmon',
+        _paymentDate: 'fe_pagblo',
+        _transacctionCode: 'nu_traban',
+        _accountantNumber: 'nu_asient',
+        _accountantDate: 'fe_asient'
+      };
+
+      return new PaymentOrder(
+        row[columnToPropertyMap._paymentAmount],
+        row[columnToPropertyMap._idPaymentStatus],
+        row[columnToPropertyMap._idPaymentType],
+        row[columnToPropertyMap._idPaymentMethod],
+        row[columnToPropertyMap._idPaymentBank],
+        row[columnToPropertyMap._idUser],
+        row[columnToPropertyMap._idTypeCurrency],
+        new Date(row[columnToPropertyMap._paymentDate]),
+        row[columnToPropertyMap._transacctionCode],
+        row[columnToPropertyMap._accountantNumber],
+        new Date(row[columnToPropertyMap._accountantDate])
+      );
+    } catch (error) {
+      console.log('ERROR:', error);
+      await client.query('ROLLBACK');
+      throw new Error('Error al buscar la orde de pago');
+    } finally {
+      client.release();
     }
+  }
+
+  update(ordenDePago: PaymentOrder): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+  delete(id: number): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  findAll(): Promise<PaymentOrder> {
+    throw new Error('Method not implemented.');
+  }
+  updateAll(ordenDePago: PaymentOrder[]): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
 }

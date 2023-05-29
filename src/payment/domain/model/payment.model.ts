@@ -15,8 +15,8 @@ export abstract class Payment {
     public readonly paymentDetail: PaymentDetail[];
 
     private totalAmountPayment: number = 0;
-    
-    constructor (
+
+    constructor(
         paymentDate: string,
         referenceCode: string,
         paymentAmount: number,
@@ -45,16 +45,16 @@ export abstract class Payment {
     validateProperties(): void {
         const regex: RegExp = /^[a-zA-Z0-9]+$/;
 
-        if (![1, 2].includes(this.idcurrencyType)){
+        if (![1, 2].includes(this.idcurrencyType)) {
             throw new paymentExceptions('currencyType', 'Tipo de moneda no valida');
         };
 
-        if (this.paymentAmount <= 0){
+        if (this.paymentAmount <= 0) {
             throw new paymentExceptions('amountGreaterThanZero', 'Monto a pagar no puede ser menor a cero')
         }
 
-        if (![1,3,4,2,5,10].includes(this.idPaymentCategory)){
-            throw new paymentExceptions( 'categoryID',`La categoria del pago(paymentType=${this.idPaymentCategory}) solo puede ser: 
+        if (![1, 3, 4, 2, 5, 10].includes(this.idPaymentCategory)) {
+            throw new paymentExceptions('categoryID', `La categoria del pago(paymentType=${this.idPaymentCategory}) solo puede ser: 
                  1=PROVEDORES
                  3=ENTREGAS A RENDIR
                  4=OBLIGACIONES FINANCIERAS
@@ -64,7 +64,7 @@ export abstract class Payment {
             `.replace(/\s+/g, ' '));
         }
 
-        if (![1,5,6,2,3,7,4,8,11,12,10,9,23,24].includes(this.idPaymentSubcategory)){
+        if (![1, 5, 6, 2, 3, 7, 4, 8, 11, 12, 10, 9, 23, 24].includes(this.idPaymentSubcategory)) {
             throw new paymentExceptions('subCategoryID', `La subcategoria (idPaymentSubcategory) solo puede ser: 
                  1=CONCESIONARIOS
                  5=CONVERSIONES
@@ -93,7 +93,7 @@ export abstract class Payment {
             `.replace(/\s+/g, ' '));
         };
 
-        if (![1,2,3,4,5,6,7,8,9,11,12,13,14,15,17,22,24,25,27,28,29,30,31,32,34,35,36,37,39,41,42,44,46,47,48,49,50,51,52].includes(this.paymentType)){
+        if (![1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 17, 22, 24, 25, 27, 28, 29, 30, 31, 32, 34, 35, 36, 37, 39, 41, 42, 44, 46, 47, 48, 49, 50, 51, 52].includes(this.paymentType)) {
             throw new paymentExceptions('paymentType', `El tipo del pago(paymentType) solo puede ser: 
                  1=OLX
                  2=Libre Disponibilidad FR
@@ -137,21 +137,21 @@ export abstract class Payment {
             `.replace(/\s+/g, ' '));
         };
 
-        if (!regex.test(this.referenceCode)){
+        if (!regex.test(this.referenceCode)) {
             throw new paymentExceptions('onlyAlphanumericReference', 'la referencia solo puede contener letras y numeros')
         };
 
-        if (this.paymentDetail.length === 0){
+        if (this.paymentDetail.length === 0) {
             throw new paymentExceptions('emptyPaymentDetail', 'Tiene que agregar al menos un detalle del pago')
         };
     }
 
-    validateAmount(){
-        this.paymentDetail.forEach((detail: PaymentDetail)  => {
+    validateAmount() {
+        this.paymentDetail.forEach((detail: PaymentDetail) => {
             this.totalAmountPayment = this.totalAmountPayment + detail.paymentAmmount;
         });
 
-        if (this.totalAmountPayment !== this.paymentAmount){
+        if (this.totalAmountPayment !== this.paymentAmount) {
             throw new paymentExceptions('equalPayments', `El monto del pago en el detalle no es igual al monto total (Monto Total = ${this.totalAmountPayment} - Monto ${this.paymentAmount}) `)
         };
     }

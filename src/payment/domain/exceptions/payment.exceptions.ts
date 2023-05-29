@@ -1,20 +1,29 @@
-type errorTypes = 
-    'currencyType' |
-    'amountGreaterThanZero' |
-    'categoryID' |
-    'subCategoryID' |
-    'paymentType' |
-    'onlyAlphanumericReference' |
-    'emptyPaymentDetail' |
-    'equalPayments'
-;
+type PaymentErrorTypes =
+  | 'currencyType'
+  | 'amountGreaterThanZero'
+  | 'categoryID'
+  | 'subCategoryID'
+  | 'paymentType'
+  | 'onlyAlphanumericReference'
+  | 'emptyPaymentDetail'
+  | 'equalPayments'
+  | 'numbersOnlyBeneficiaryDocument'
+  | 'paymentStatusID'
+  | 'lengthInterbankAccountNumber'
+  | 'bankID'
+  | 'bankForPaymentID';
 
-export class paymentExceptions extends Error {
-    public readonly errorType: errorTypes;
-
-    constructor(errorType: errorTypes, message: string){
-        super(message);
-
-        this.errorType = errorType;
+const exceptionsFactory = ()=>{
+  return class customExceptionsFactory extends Error {
+    public readonly errorType: PaymentErrorTypes;
+  
+    constructor(errorType: PaymentErrorTypes, message: string) {
+      super(message);
+  
+      this.errorType = errorType;
     }
+  }
 };
+
+export const paymentExceptions = exceptionsFactory();
+export const PaymentDetailExceptions = exceptionsFactory();

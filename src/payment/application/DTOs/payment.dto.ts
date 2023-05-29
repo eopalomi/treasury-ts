@@ -33,4 +33,4 @@ interface PaymentDetail {
     idPaymenOrder: number,
     idBankForPayment: number,
     accountingEntryNumber: number
-}
+};
